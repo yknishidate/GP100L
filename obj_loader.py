@@ -2,6 +2,7 @@ import taichi as ti
 
 
 def load_obj(fliepath):
+    # TODO: support quad
     with open(fliepath) as f:
         lines = f.readlines()
 
@@ -9,8 +10,6 @@ def load_obj(fliepath):
     num_vertices = len(vertex_lines)
     face_lines = [line for line in lines if line.startswith('f ')]
     num_faces = len(face_lines)
-    print("num_vertices: ", num_vertices)
-    print("num_faces: ", num_faces)
 
     indices = ti.field(int, shape=num_faces * 3)
     vertices = ti.Vector.field(3, dtype=float, shape=num_vertices)
