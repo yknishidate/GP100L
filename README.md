@@ -1,6 +1,6 @@
-# GPU Graphics in 100 Lines
+# Graphics Programming in 100 Lines
 
-Tiny implementations of Computer Graphics on GPU.
+Tiny implementations of Computer Graphics Algorithms.
 
 ## Contents
 
