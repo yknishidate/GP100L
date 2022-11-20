@@ -7,23 +7,23 @@ gui = ti.GUI("Pathtracing", res=(width, height), fast_gui=True)
 colors = ti.Vector.field(3, dtype=float, shape=(width, height))
 
 eps = 0.00001
-num_spheres = 2
+num_spheres = 3
 sphere_centers = ti.Vector.field(3, dtype=float, shape=num_spheres)
-sphere_centers[0] = ti.Vector([0.0, 0.0, 0.0])
+sphere_centers[0] = ti.Vector([0.1, 0.0, 0.0])
 sphere_centers[1] = ti.Vector([0.0, -100.1, 0.0])
-# sphere_centers[2] = ti.Vector([100.3, 0.0, 0.0])
+sphere_centers[2] = ti.Vector([-0.1, 0.1, -0.2])
 sphere_radiuses = ti.field(dtype=float, shape=num_spheres)
 sphere_radiuses[0] = 0.1
 sphere_radiuses[1] = 100
-# sphere_radiuses[2] = 100
+sphere_radiuses[2] = 0.2
 sphere_emissions = ti.Vector.field(3, dtype=float, shape=num_spheres)
 sphere_emissions[0] = ti.Vector([1.0, 1.0, 1.0]) * 0.0
 sphere_emissions[1] = ti.Vector([1.0, 1.0, 1.0]) * 0.0
-# sphere_emissions[2] = ti.Vector([0.0, 0.0, 0.0])
+sphere_emissions[2] = ti.Vector([1.0, 1.0, 1.0]) * 1.0
 sphere_colors = ti.Vector.field(3, dtype=float, shape=num_spheres)
 sphere_colors[0] = ti.Vector([1.0, 1.0, 1.0]) * 0.5
 sphere_colors[1] = ti.Vector([1.0, 1.0, 1.0]) * 0.9
-# sphere_colors[2] = ti.Vector([0.9, 0.5, 0.5])
+sphere_colors[2] = ti.Vector([1.0, 1.0, 1.0]) * 0.0
 
 
 @ti.func
