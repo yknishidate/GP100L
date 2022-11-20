@@ -10,9 +10,16 @@ Tiny implementations of Computer Graphics on GPU.
 ### SPH (99 lines)
 <img width="509" alt="Screenshot 2022-11-20 110452" src="https://user-images.githubusercontent.com/30839669/202879237-c0aec041-3445-4212-ab60-31e677231bde.png">
 
+## Getting started
+
+```sh
+git clone https://github.com/yknishidate/gpu_graphics_in_100_lines.git
+
+pip install taichi
+
+python download.py
+```
 
 ## Library
 
 - [Taichi](https://github.com/taichi-dev/taichi) - Productive & portable high-performance programming in Python.
-
-## References
