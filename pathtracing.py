@@ -3,10 +3,9 @@ import math
 
 ti.init(arch=ti.vulkan)
 width, height = 1024, 1024
+eps = 0.00001
 gui = ti.GUI("Pathtracing", res=(width, height), fast_gui=True)
 colors = ti.Vector.field(3, dtype=float, shape=(width, height))
-
-eps = 0.00001
 num_spheres = 3
 sphere_centers = ti.Vector.field(3, dtype=float, shape=num_spheres)
 sphere_centers[0] = ti.Vector([0.1, 0.0, 0.0])
