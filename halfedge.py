@@ -97,7 +97,7 @@ if __name__ == '__main__':
     scene = ti.ui.Scene()
     camera = ti.ui.Camera()
 
-    vertices, faces, edges = load_obj("torus_quad.obj")
+    vertices, faces, edges = load_obj("data/torus_quad.obj")
     vertex_field = convert_to_vertex_field(vertices)
     line_index_field = convert_to_line_index_field(edges)
     line_offset = 0
