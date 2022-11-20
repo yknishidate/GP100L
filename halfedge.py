@@ -51,25 +51,33 @@ def load_obj(fliepath):
 
 vertices, faces, edges = load_obj("cube.obj")
 
+num_faces = len(faces)
+num_edges = len(edges)
+face_points = ti.Vector.field(3, dtype=float, shape=num_faces)
+edge_points = ti.Vector.field(3, dtype=float, shape=num_faces)
+
 
 # @ti.kernel
-# def subdivide():
-#     face_points = ti.Vector.field(3, dtype=float, shape=num_faces)
-#     for i in range(num_faces):
-#         face = faces[i]
-#         v1, v2, v3 = vertices[face.v1], vertices[face.v2], vertices[face.v3]
-#         face_points[i] = (v1 + v2 + v3) / 3.0
+def subdivide():
+    for i in range(num_faces):
+        face = faces[i]
+        v1 = vertices[face.v1]
+        v2 = vertices[face.v2]
+        v3 = vertices[face.v3]
+        v4 = vertices[face.v4]
+        face_points[i] = (v1 + v2 + v3 + v4) / 4.0
 
-#     edge_points = ti.Vector.field(3, dtype=float, shape=num_faces)
-#     for i in range(num_edges):
-#         edge = edges[i]
-#         fp1, fp2 = face_points[edge.f1], face_points[edge.f2]
-#         v1, v2 = vertices[edge.v1], vertices[edge.v2]
-#         edge_points[i] = (fp1 + fp2 + v1 + v2) / 4.0
+    # for i in range(num_edges):
+    #     edge = edges[i]
+    #     fp1, fp2 = face_points[edge.f], face_points[edge.f2]
+    #     v1, v2 = vertices[edge.v1], vertices[edge.v2]
+    #     edge_points[i] = (fp1 + fp2 + v1 + v2) / 4.0
 
-#     for i in range(num_vertices):
-#         v = vertices[i]
-#         f = face_points[]
+    # num_vertices = vertices.shape[0]
+    # for i in range(num_vertices):
+    #     v = vertices[i]
+    #     f = face_points[]
+
 
 num_edges = len(edges)
 line_indices = ti.field(int, shape=num_edges * 2)
@@ -83,8 +91,12 @@ canvas = window.get_canvas()
 canvas.set_background_color((1, 1, 1))
 scene = ti.ui.Scene()
 camera = ti.ui.Camera()
+camera.track_user_inputs(window, movement_speed=0.03, hold_key=ti.ui.RMB)
+
+subdivide()
+
 while window.running:
-    camera.position(3.0, 3.0, 5.0)
+    camera.position(2.0, 3.0, 5.0)
     camera.lookat(0.0, 0.0, 0.0)
     scene.set_camera(camera)
 
@@ -93,6 +105,8 @@ while window.running:
 
     scene.particles(vertices, radius=0.05)
     scene.lines(vertices, width=4, indices=line_indices)
+
+    scene.particles(face_points, radius=0.05, color=(1.0, 0.0, 0.0))
 
     canvas.scene(scene)
     window.show()
