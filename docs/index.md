@@ -1,9 +1,9 @@
 
 # Contents
 
-- [x] [Pathtracing (100 lines)](./pathtracing.html)
-- [x] [SPH Simulation (99 lines)](./sph.html)
-- [x] [Half-Edge (120 lines)](./halfedge.html)
+- [Pathtracing (100 lines)](./pathtracing.html)
+- [SPH Simulation (99 lines)](./sph.html)
+- [Half-Edge (120 lines)](./halfedge.html)
 
 <p align="center">
 <img width="200" alt="Screenshot 2022-11-20 104709" src="https://user-images.githubusercontent.com/30839669/202879206-871f86e3-4327-40a8-b006-e2f1e0544fd9.png">
