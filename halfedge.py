@@ -109,9 +109,9 @@ if __name__ == '__main__':
         scene.point_light(pos=(0, 1, 2), color=(1, 1, 1))
         scene.ambient_light((0.5, 0.5, 0.5))
 
-        scene.particles(vertex_field, radius=0.01)  # vertex
-        scene.lines(vertex_field, width=1, indices=line_index_field)  # edge
-        scene.lines(vertex_field, width=4, indices=line_index_field,
+        scene.particles(vertex_field, radius=0.02)  # vertex
+        scene.lines(vertex_field, width=2, indices=line_index_field)  # edge
+        scene.lines(vertex_field, width=6, indices=line_index_field,
                     index_offset=line_offset*2, index_count=line_count*2,
                     color=(1.0, 0.0, 0.0))  # edge (red)
 
