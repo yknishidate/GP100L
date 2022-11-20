@@ -4,7 +4,10 @@ Tiny implementations of Computer Graphics Algorithms.
 
 ## Contents
 
-![image](https://user-images.githubusercontent.com/30839669/202911490-8c9c8a59-d9d4-41b0-a1ba-dc0fff53366d.png)
+|Pathtracing (99 lines)|SPH (100 lines)|Half-Edge (120lines)|
+|-|-|-|
+|<a href="./docs/pathtracing.html"><img width="400" alt="Screenshot 2022-11-20 104709" src="https://user-images.githubusercontent.com/30839669/202879206-871f86e3-4327-40a8-b006-e2f1e0544fd9.png"></a>|<a href="./docs/sph.html"><img width="400" alt="Screenshot 2022-11-20 110452" src="https://user-images.githubusercontent.com/30839669/202879237-c0aec041-3445-4212-ab60-31e677231bde.png"></a>|<a href="./docs/halfedge.html"><img width="400" alt="Screenshot 2022-11-21 003535" src="https://user-images.githubusercontent.com/30839669/202911192-aeb5bc13-a7aa-4369-9b7d-b5d3eadec466.png"></a>|
+
 
 ## Getting started
 
