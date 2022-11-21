@@ -1,12 +1,9 @@
 import taichi as ti
-ti.init(arch=ti.vulkan)
 
 
 class Vertex:
     def __init__(self, x, y, z) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
+        self.position = ti.Vector([x, y, z])
         self.edge = -1
 
 
@@ -74,9 +71,7 @@ def load_obj(fliepath):
 def convert_to_vertex_field(vertices):
     vertex_field = ti.Vector.field(3, dtype=float, shape=len(vertices))
     for i in range(len(vertices)):
-        vertex_field[i].x = vertices[i].x
-        vertex_field[i].y = vertices[i].y
-        vertex_field[i].z = vertices[i].z
+        vertex_field[i] = vertices[i].position
     return vertex_field
 
 
@@ -91,6 +86,7 @@ def convert_to_line_index_field(edges):
 
 
 if __name__ == '__main__':
+    ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Half-Edge", (1024, 1024), vsync=True)
     canvas = window.get_canvas()
     canvas.set_background_color((1, 1, 1))
