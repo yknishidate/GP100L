@@ -9,7 +9,7 @@ class Mesh:
         self.edges = edges
 
     def add_vertex(self, position):
-        self.vertices.append(he.Vertex(position.x, position.y, position.z))
+        self.vertices.append(he.Vertex(position))
         return len(self.vertices) - 1
 
     def add_edge(self, v, f):
@@ -141,10 +141,10 @@ def main():
     camera.lookat(0.0, 0.0, 0.0)
 
     vertices = [
-        he.Vertex(1, 1, 0),
-        he.Vertex(1, -1, 0),
-        he.Vertex(-1, -1, 0),
-        he.Vertex(-1, 1, 0)]
+        he.Vertex(ti.Vector([1, 1, 0])),
+        he.Vertex(ti.Vector([1, -1, 0])),
+        he.Vertex(ti.Vector([-1, -1, 0])),
+        he.Vertex(ti.Vector([-1, 1, 0]))]
     edges = [
         he.HalfEdge(0, face=0, twin=7, next=1, prev=3),
         he.HalfEdge(3, face=0, twin=6, next=2, prev=0),

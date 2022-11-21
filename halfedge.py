@@ -2,8 +2,8 @@ import taichi as ti
 
 
 class Vertex:
-    def __init__(self, x, y, z, edge=-1) -> None:
-        self.position = ti.Vector([x, y, z])
+    def __init__(self, position, edge=-1) -> None:
+        self.position = position
         self.edge = edge
 
 
@@ -30,28 +30,23 @@ def load_obj(file_path):
     edges = []
     for line in [line for line in lines if line.startswith('v ')]:
         vals = line.split()
-        vertices.append(Vertex(float(vals[1]), float(vals[2]), float(vals[3])))
+        x, y, z = float(vals[1]), float(vals[2]), float(vals[3])
+        vertices.append(Vertex(ti.Vector([x, y, z])))
 
     for f, line in enumerate([line for line in lines if line.startswith('f ')]):
         vals = line.split()
-        es = []
-        for i in range(4):  # NOTE: only quad polygons
+        num_vertices = len(vals) - 1
+        edge_offset = len(edges)
+        for i in range(num_vertices):
             v = int(vals[i + 1].split("/")[0]) - 1
-            es.append(f * 4 + i)
             edges.append(HalfEdge(v, f))
-            vertices[v].edge = es[i]
+            vertices[v].edge = edge_offset + i
 
-        edges[es[0]].next = es[1]
-        edges[es[1]].next = es[2]
-        edges[es[2]].next = es[3]
-        edges[es[3]].next = es[0]
+        for i in range(num_vertices):
+            edges[edge_offset + i].next = edge_offset + (i + 1) % num_vertices
+            edges[edge_offset + i].prev = edge_offset + (i - 1) % num_vertices
 
-        edges[es[0]].prev = es[3]
-        edges[es[1]].prev = es[0]
-        edges[es[2]].prev = es[1]
-        edges[es[3]].prev = es[2]
-
-        faces.append(Face(es[0]))
+        faces.append(Face(edge_offset))
 
     for ei1 in range(len(edges)):  # search twins
         ei2 = edges[ei1].next
