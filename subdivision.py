@@ -28,6 +28,8 @@ def compute_face_points(mesh):
 
 
 def compute_edge_points(mesh, face_points):
+    edges = mesh.edges
+    vertices = mesh.vertices
     edge_points = ti.Vector.field(3, dtype=float, shape=len(edges) // 2)
     added_edges = []
     for e1 in range(len(edges)):
@@ -46,8 +48,7 @@ def compute_edge_points(mesh, face_points):
         position = (vertices[v1].position + vertices[v2].position + face_points[f1] + face_points[f2]) / 4.0
         index = len(added_edges) - 1
         edge_points[index] = position
-        mesh.add_vertex_to_edge(e1, position)
-    return edge_points
+    return edge_points, added_edges
 
 
 def move_vertices(mesh, face_points):
@@ -88,15 +89,17 @@ def move_vertices(mesh, face_points):
 def subdivide(mesh):
     new_mesh = copy.deepcopy(mesh)
     face_points = compute_face_points(new_mesh)
-    move_vertices(new_mesh, face_points)
-    edge_points = compute_edge_points(new_mesh, face_points)
-    print("face_points:", face_points.shape[0])
-    print("edge_points:", edge_points.shape[0])
-    return new_mesh
+    edge_points, added_edges = compute_edge_points(new_mesh, face_points)
+    # move_vertices(new_mesh, face_points)
+
+    for i, e in enumerate(added_edges):
+        mesh.add_vertex_to_edge(e, edge_points[i])
+
+    return new_mesh, face_points, edge_points
     # return face_points, edge_points, moved_vertices, new_vertices, new_edges
 
 
-if __name__ == '__main__':
+def main():
     ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Half-Edge", (1024, 1024), vsync=True)
     canvas = window.get_canvas()
@@ -110,7 +113,7 @@ if __name__ == '__main__':
     mesh = Mesh(vertices, faces, edges)
 
     # face_points, edge_points, moved_vertices, new_vertices, new_edges = subdivide(mesh)
-    new_mesh = subdivide(mesh)
+    new_mesh, face_points, edge_points = subdivide(mesh)
 
     # original mesh
     vertex_field = he.convert_to_vertex_field(vertices)
@@ -120,9 +123,9 @@ if __name__ == '__main__':
     new_vertex_field = he.convert_to_vertex_field(new_mesh.vertices)
     new_line_index_field = he.convert_to_line_index_field(new_mesh.edges)
 
-# moved_vertex_field = he.convert_to_vertex_field(moved_vertices)
-# new_vertex_field = he.convert_to_vertex_field(new_vertices)
-# new_line_index_field = he.convert_to_line_index_field(new_edges)
+    # moved_vertex_field = he.convert_to_vertex_field(moved_vertices)
+    # new_vertex_field = he.convert_to_vertex_field(new_vertices)
+    # new_line_index_field = he.convert_to_line_index_field(new_edges)
 
     while window.running:
         camera.track_user_inputs(window, movement_speed=0.03, hold_key=ti.ui.RMB)
@@ -138,10 +141,14 @@ if __name__ == '__main__':
         scene.particles(new_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # vertex
         scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # edge
 
-        # scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))  # face points
-        # scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))  # edge points
+        scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))  # face points
+        scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))  # edge points
         # scene.particles(moved_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # new vertex
         # scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # new edge
 
         canvas.scene(scene)
         window.show()
+
+
+if __name__ == '__main__':
+    main()

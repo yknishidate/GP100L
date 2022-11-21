@@ -54,8 +54,7 @@ class Mesh:
     def add_edge_to_face(f, v1, v2):
         pass
 
-
-if __name__ == '__main__':
+def main():
     ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Half-Edge", (1024, 1024), vsync=True)
     canvas = window.get_canvas()
@@ -98,3 +97,7 @@ if __name__ == '__main__':
 
         canvas.scene(scene)
         window.show()
+
+if __name__ == '__main__':
+    main()
+    

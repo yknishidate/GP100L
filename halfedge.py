@@ -96,8 +96,7 @@ def convert_to_line_index_field(edges):
             index += 2
     return line_index_field
 
-
-if __name__ == '__main__':
+def main():
     ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Half-Edge", (1024, 1024), vsync=True)
     canvas = window.get_canvas()
@@ -126,3 +125,7 @@ if __name__ == '__main__':
         canvas.scene(scene)
         window.show()
         line_offset = (line_offset + 1) % len(edges)
+
+if __name__ == '__main__':
+    main()
+    
