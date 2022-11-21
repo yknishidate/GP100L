@@ -22,8 +22,6 @@ Tiny implementations of Computer Graphics Algorithms.
 git clone https://github.com/yknishidate/gpu_graphics_in_100_lines.git
 
 pip install taichi
-
-python download.py
 ```
 
 ## Library
