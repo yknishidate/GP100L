@@ -119,7 +119,8 @@ def main():
     camera.position(0.5, 0.0, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
-    vertices, faces, edges = he.load_obj("data/cube.obj")
+    vertex_positions, face_indices = he.load_obj("data/cube.obj")
+    vertices, faces, edges = he.build_half_edges(vertex_positions, face_indices)
     mesh = Mesh(vertices, faces, edges)
     vertex_field = he.convert_to_vertex_field(vertices)
     index_field = he.convert_to_line_index_field(edges)
