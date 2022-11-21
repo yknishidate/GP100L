@@ -87,16 +87,14 @@ def move_vertices(mesh, face_points):
 
 
 def subdivide(mesh):
-    new_mesh = copy.deepcopy(mesh)
-    face_points = compute_face_points(new_mesh)
-    edge_points, added_edges = compute_edge_points(new_mesh, face_points)
-    # move_vertices(new_mesh, face_points)
+    face_points = compute_face_points(mesh)
+    edge_points, added_edges = compute_edge_points(mesh, face_points)
+    move_vertices(mesh, face_points)
 
     for i, e in enumerate(added_edges):
         mesh.add_vertex_to_edge(e, edge_points[i])
 
-    return new_mesh, face_points, edge_points
-    # return face_points, edge_points, moved_vertices, new_vertices, new_edges
+    return face_points, edge_points
 
 
 def main():
@@ -112,16 +110,15 @@ def main():
     vertices, faces, edges = he.load_obj("data/cube.obj")
     mesh = Mesh(vertices, faces, edges)
 
-    # face_points, edge_points, moved_vertices, new_vertices, new_edges = subdivide(mesh)
-    new_mesh, face_points, edge_points = subdivide(mesh)
+    face_points, edge_points = subdivide(mesh)
 
-    # original mesh
-    vertex_field = he.convert_to_vertex_field(vertices)
-    line_index_field = he.convert_to_line_index_field(edges)
+    # # original mesh
+    # vertex_field = he.convert_to_vertex_field(vertices)
+    # line_index_field = he.convert_to_line_index_field(edges)
 
     # new mesh
-    new_vertex_field = he.convert_to_vertex_field(new_mesh.vertices)
-    new_line_index_field = he.convert_to_line_index_field(new_mesh.edges)
+    new_vertex_field = he.convert_to_vertex_field(vertices)
+    new_line_index_field = he.convert_to_line_index_field(edges)
 
     # moved_vertex_field = he.convert_to_vertex_field(moved_vertices)
     # new_vertex_field = he.convert_to_vertex_field(new_vertices)
@@ -134,8 +131,8 @@ def main():
         scene.ambient_light((0.5, 0.5, 0.5))
 
         # original mesh
-        scene.particles(vertex_field, radius=0.02)  # vertex
-        scene.lines(vertex_field, width=2, indices=line_index_field)  # edge
+        # scene.particles(vertex_field, radius=0.02)  # vertex
+        # scene.lines(vertex_field, width=2, indices=line_index_field)  # edge
 
         # new mesh
         scene.particles(new_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # vertex
