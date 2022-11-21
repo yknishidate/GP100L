@@ -99,7 +99,6 @@ class Mesh:
             e2 = added_edges[(i+1) % len(added_edges)]
             self.edges[e1].prev = e2
             self.edges[e2].next = e1
-            print(i)
 
         # 追加した face point を追加した適当な edge につなぐ
         # face point から出る方向であればどれでもいいため
