@@ -50,9 +50,92 @@ class Mesh:
         self.edges[new_e2].twin = old_e1
 
         self.vertices[new_v].edge = new_e1
+        return new_v
 
-    def add_edge_to_face(f, v1, v2):
+    def find_edge(self, v1, v2):
         pass
+
+    def add_face(self, edge):
+        self.faces.append(he.Face(edge))
+        return len(self.faces) - 1
+
+    # def add_edge_to_face(self, f, v1, v2):
+    #     # 時計まわりの起点となるエッジを持っておく
+    #     e = self.faces[f].edge
+    #     start_e = e
+    #     while True:
+
+    #         e = self.edges[e].next
+    #         if e == start_e:
+    #             break
+
+    #     new_e1 = self.add_edge(v1, f)
+
+    def add_vertex_to_face(self, f, vs, position):
+        fp = self.add_vertex(position)
+
+        # 1. 全ての edge point を face point と結ぶ
+        # 2. 隣接する edge 同士の next, prev を埋める
+        # 3. ループが出来た分の face を追加する
+        # 4. 全ての edge の face を更新する
+
+        # 1. 全ての edge point を face point と結ぶ
+        e = self.faces[f].edge
+        start_e = e
+        added_edges = []
+        while True:
+            v = self.edges[e].origin
+            if v in vs:
+                prev = self.edges[e].prev
+
+                # TODO: update face
+                new1 = self.add_edge(v, -1)  # v -> fp
+                new2 = self.add_edge(fp, -1)  # fp -> v
+                added_edges.append(new1)
+                added_edges.append(new2)
+
+                # update prev
+                self.edges[prev].next = new1
+
+                # update new1
+                self.edges[new1].prev = prev
+                self.edges[new1].twin = new2
+                # TODO: update .next
+
+                # update new2
+                self.edges[new2].next = e
+                self.edges[new2].twin = new1
+                # TODO: update .prev
+
+                # update e
+                self.edges[e].prev = new2
+
+            e = self.edges[e].next
+            if e == start_e:
+                break
+
+        # 2. 隣接する edge 同士の next, prev を埋める
+        for i in range(1, len(added_edges) - 1, 2):
+            e1 = added_edges[i]
+            e2 = added_edges[i+1]
+            self.edges[e1].prev = e2
+            self.edges[e2].next = e1
+
+        # 最後のエッジと最初のエッジをつなぐ
+        e1 = added_edges[-1]
+        e2 = added_edges[0]
+        self.edges[e1].prev = e2
+        self.edges[e2].next = e1
+
+        # for v in vs:
+        #     e1 = self.vertices[v].edge
+        #     e2 = self.edges[e1].twin
+
+        #     new_e = self.add_edge(v, f)
+        #     # twin, next, prev
+
+        return fp
+
 
 def main():
     ti.init(arch=ti.vulkan)
@@ -98,6 +181,6 @@ def main():
         canvas.scene(scene)
         window.show()
 
+
 if __name__ == '__main__':
     main()
-    

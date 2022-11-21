@@ -91,8 +91,27 @@ def subdivide(mesh):
     edge_points, added_edges = compute_edge_points(mesh, face_points)
     move_vertices(mesh, face_points)
 
+    # vertices: [original][edge_points]
+    added_vertices = []
     for i, e in enumerate(added_edges):
-        mesh.add_vertex_to_edge(e, edge_points[i])
+        v = mesh.add_vertex_to_edge(e, edge_points[i])
+        added_vertices.append(v)
+
+    print("added_vertices:", added_vertices)
+    for f in range(len(mesh.faces)):
+        added_vertices_in_face = []
+        for v in added_vertices:
+            ev = mesh.vertices[v].edge
+            et = mesh.edges[ev].twin
+            fv1 = mesh.edges[ev].face
+            fv2 = mesh.edges[et].face
+            if f == fv1 or f == fv2:
+                added_vertices_in_face.append(v)
+
+        print("face:", f)
+        print("added_vertices_in_face:", added_vertices_in_face)
+        position = face_points[f]
+        mesh.add_vertex_to_face(f, added_vertices_in_face, position)
 
     return face_points, edge_points
 
