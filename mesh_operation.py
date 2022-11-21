@@ -111,7 +111,7 @@ class Mesh:
                 self.edges[e].prev = new2
 
             e = self.edges[e].next
-            if e == start_e:
+            if e == start_e or e == -1:
                 break
 
         # 2. 隣接する edge 同士の next, prev を埋める
@@ -130,7 +130,6 @@ class Mesh:
         # for v in vs:
         #     e1 = self.vertices[v].edge
         #     e2 = self.edges[e1].twin
-
         #     new_e = self.add_edge(v, f)
         #     # twin, next, prev
 
@@ -154,18 +153,18 @@ def main():
         he.Vertex(-1, 1, 0)]
     edges = [
         he.HalfEdge(0, face=0, twin=7, next=1, prev=3),
-        he.HalfEdge(1, face=0, twin=6, next=2, prev=0),
+        he.HalfEdge(3, face=0, twin=6, next=2, prev=0),
         he.HalfEdge(2, face=0, twin=5, next=3, prev=1),
-        he.HalfEdge(3, face=0, twin=4, next=0, prev=2),
+        he.HalfEdge(1, face=0, twin=4, next=0, prev=2),
         he.HalfEdge(0, face=-1, twin=3, next=5, prev=7),
-        he.HalfEdge(3, face=-1, twin=2, next=6, prev=4),
+        he.HalfEdge(1, face=-1, twin=2, next=6, prev=4),
         he.HalfEdge(2, face=-1, twin=1, next=7, prev=5),
-        he.HalfEdge(1, face=-1, twin=0, next=4, prev=6)]
+        he.HalfEdge(3, face=-1, twin=0, next=4, prev=6)]
     faces = [he.Face(0)]
     mesh = Mesh(vertices, faces, edges)
 
-    mesh.add_vertex_to_edge(0, ti.Vector([0.5, 0.0, 0.0]))
-    mesh.add_vertex_to_edge(3, ti.Vector([0.0, 1.5, 0.0]))
+    mesh.add_vertex_to_face(0, [0, 1, 2, 3], ti.Vector([0.0, 0.0, 0.0]))
+    mesh.add_vertex_to_edge(0, ti.Vector([0.0, 1.5, 0.0]))
 
     vertex_field = he.convert_to_vertex_field(mesh.vertices)
     line_index_field = he.convert_to_line_index_field(mesh.edges)
