@@ -52,27 +52,13 @@ class Mesh:
         self.vertices[new_v].edge = new_e1
         return new_v
 
-    def find_edge(self, v1, v2):
-        pass
-
     def add_face(self, edge):
         self.faces.append(he.Face(edge))
         return len(self.faces) - 1
 
-    # def add_edge_to_face(self, f, v1, v2):
-    #     # 時計まわりの起点となるエッジを持っておく
-    #     e = self.faces[f].edge
-    #     start_e = e
-    #     while True:
-
-    #         e = self.edges[e].next
-    #         if e == start_e:
-    #             break
-
-    #     new_e1 = self.add_edge(v1, f)
-
     def add_vertex_to_face(self, f, vs, position):
         fp = self.add_vertex(position)
+        original_f = f
 
         # 1. 全ての edge point を face point と結ぶ
         # 2. 隣接する edge 同士の next, prev を埋める
@@ -115,23 +101,49 @@ class Mesh:
                 break
 
         # 2. 隣接する edge 同士の next, prev を埋める
+        # for i in range(1, len(added_edges), 2):
+        print("added_edges:", added_edges)
+        if len(added_edges) <= 4:
+            print("f", f)
+            print("vs", vs)
+            exit()
+
         for i in range(1, len(added_edges) - 1, 2):
             e1 = added_edges[i]
             e2 = added_edges[i+1]
+            # e2 = added_edges[(i + 1) % len(added_edges)]
             self.edges[e1].prev = e2
             self.edges[e2].next = e1
+            # print("e1,e2", e1, e2)
 
         # 最後のエッジと最初のエッジをつなぐ
         e1 = added_edges[-1]
         e2 = added_edges[0]
         self.edges[e1].prev = e2
         self.edges[e2].next = e1
+        self.vertices[fp].edge = added_edges[1]
+        # print("e1,e2", e1, e2)
 
-        # for v in vs:
-        #     e1 = self.vertices[v].edge
-        #     e2 = self.edges[e1].twin
-        #     new_e = self.add_edge(v, f)
-        #     # twin, next, prev
+        # 3. ループが出来た分の face を追加する
+        for i in range(2, len(added_edges), 2):
+            e = added_edges[i]
+            f = self.add_face(added_edges[i])
+
+            start_e = e
+            while True:
+                self.edges[e].face = f
+                e = self.edges[e].next
+                if e == start_e:
+                    break
+
+        # 元からある最初のポリゴンの周りのエッジにfaceを設定する
+        e = added_edges[0]
+        start_e = e
+        while True:
+            self.edges[e].face = original_f
+            e = self.edges[e].next
+            if e == start_e:
+                break
 
         return fp
 

@@ -98,6 +98,7 @@ def subdivide(mesh):
         added_vertices.append(v)
 
     print("added_vertices:", added_vertices)
+    print("len(added_vertices):", len(added_vertices))
     for f in range(len(mesh.faces)):
         added_vertices_in_face = []
         for v in added_vertices:
@@ -105,6 +106,7 @@ def subdivide(mesh):
             et = mesh.edges[ev].twin
             fv1 = mesh.edges[ev].face
             fv2 = mesh.edges[et].face
+            print("fv1,fv2", fv1, fv2)
             if f == fv1 or f == fv2:
                 added_vertices_in_face.append(v)
 
@@ -130,6 +132,7 @@ def main():
     mesh = Mesh(vertices, faces, edges)
 
     face_points, edge_points = subdivide(mesh)
+    face_points, edge_points = subdivide(mesh)
 
     # # original mesh
     # vertex_field = he.convert_to_vertex_field(vertices)
@@ -143,6 +146,7 @@ def main():
     # new_vertex_field = he.convert_to_vertex_field(new_vertices)
     # new_line_index_field = he.convert_to_line_index_field(new_edges)
 
+    offset = 0
     while window.running:
         camera.track_user_inputs(window, movement_speed=0.03, hold_key=ti.ui.RMB)
         scene.set_camera(camera)
@@ -156,6 +160,8 @@ def main():
         # new mesh
         scene.particles(new_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # vertex
         scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # edge
+        scene.lines(new_vertex_field, width=6, indices=new_line_index_field,
+                    index_offset=offset*2, index_count=8, color=(1.0, 0.0, 0.0))  # edge (red)
 
         scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))  # face points
         scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))  # edge points
@@ -164,6 +170,8 @@ def main():
 
         canvas.scene(scene)
         window.show()
+
+        offset += 1
 
 
 if __name__ == '__main__':
