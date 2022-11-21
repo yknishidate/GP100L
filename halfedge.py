@@ -21,8 +21,8 @@ class Face:
         self.edge = edge
 
 
-def load_obj(fliepath):
-    with open(fliepath) as f:
+def load_obj(file_path):
+    with open(file_path) as f:
         lines = f.readlines()
 
     vertices = []
