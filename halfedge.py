@@ -25,20 +25,34 @@ def load_obj(file_path):
     with open(file_path) as f:
         lines = f.readlines()
 
-    vertices = []
-    faces = []
-    edges = []
+    vertex_positions = []
     for line in [line for line in lines if line.startswith('v ')]:
         vals = line.split()
         x, y, z = float(vals[1]), float(vals[2]), float(vals[3])
-        vertices.append(Vertex(ti.Vector([x, y, z])))
+        vertex_positions.append(ti.Vector([x, y, z]))
 
+    face_indices = []
     for f, line in enumerate([line for line in lines if line.startswith('f ')]):
         vals = line.split()
         num_vertices = len(vals) - 1
-        edge_offset = len(edges)
+        indices = []
         for i in range(num_vertices):
             v = int(vals[i + 1].split("/")[0]) - 1
+            indices.append(v)
+        face_indices.append(indices)
+    return vertex_positions, face_indices
+
+def build_half_edges(vertex_positions, face_indices):
+    vertices = []
+    faces = []
+    edges = []
+    for pos in vertex_positions:
+        vertices.append(Vertex(pos))
+
+    for f, indices in enumerate(face_indices):
+        num_vertices = len(indices)
+        edge_offset = len(edges)
+        for i, v in enumerate(indices):
             edges.append(HalfEdge(v, f))
             vertices[v].edge = edge_offset + i
 
@@ -99,7 +113,8 @@ def main():
     scene = ti.ui.Scene()
     camera = ti.ui.Camera()
 
-    vertices, faces, edges = load_obj("data/torus_quad.obj")
+    vertex_positions, face_indices = load_obj("data/torus_quad.obj")
+    vertices, faces, edges = build_half_edges(vertex_positions, face_indices)
     vertex_field = convert_to_vertex_field(vertices)
     line_index_field = convert_to_line_index_field(edges)
     line_offset = 0
