@@ -2,18 +2,18 @@ import taichi as ti
 
 
 class Vertex:
-    def __init__(self, x, y, z) -> None:
+    def __init__(self, x, y, z, edge=-1) -> None:
         self.position = ti.Vector([x, y, z])
-        self.edge = -1
+        self.edge = edge
 
 
 class HalfEdge:
-    def __init__(self, origin, face) -> None:
+    def __init__(self, origin, face=-1, twin=-1, next=-1, prev=-1) -> None:
         self.origin = origin
         self.face = face
-        self.twin = -1
-        self.next = -1
-        self.prev = -1
+        self.twin = twin
+        self.next = next
+        self.prev = prev
 
 
 class Face:
@@ -76,12 +76,24 @@ def convert_to_vertex_field(vertices):
 
 
 def convert_to_line_index_field(edges):
-    line_index_field = ti.field(int, shape=len(edges) * 2)
+    line_index_field = ti.field(int, shape=len(edges))
+    index = 0
+    added_edges = []
     for i in range(len(edges)):
         e1 = i
         e2 = edges[i].next
-        line_index_field[i * 2 + 0] = edges[e1].origin
-        line_index_field[i * 2 + 1] = edges[e2].origin
+
+        if edges[e1].twin in added_edges:
+            continue
+        added_edges.append(e1)
+
+        if e2 != -1:
+            v1 = edges[e1].origin
+            v2 = edges[e2].origin
+
+            line_index_field[index] = v1
+            line_index_field[index + 1] = v2
+            index += 2
     return line_index_field
 
 
