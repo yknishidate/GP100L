@@ -1,6 +1,5 @@
 import taichi as ti
 import halfedge as he
-import copy
 from mesh_operation import Mesh
 
 
@@ -19,7 +18,6 @@ def compute_face_points(mesh):
             sum_vertex += vertices[v].position
             count += 1
 
-            # compute next
             e = edges[e].next
             if e == start_e:
                 break
@@ -38,10 +36,8 @@ def compute_edge_points(mesh, face_points):
         added_edges.append(e1)
 
         e2 = edges[e1].next
-
         v1 = edges[e1].origin
         v2 = edges[e2].origin
-
         f1 = edges[e1].face
         f2 = edges[edges[e1].twin].face
 
@@ -91,7 +87,6 @@ def subdivide(mesh):
     edge_points, added_edges = compute_edge_points(mesh, face_points)
     move_vertices(mesh, face_points)
 
-    # vertices: [original][edge_points]
     added_vertices = []
     for i, e in enumerate(added_edges):
         v = mesh.add_vertex_to_edge(e, edge_points[i])
@@ -116,31 +111,22 @@ def subdivide(mesh):
 def main():
     ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Subdivision", (1024, 1024), vsync=True)
+    gui = window.get_gui()
     canvas = window.get_canvas()
     canvas.set_background_color((1, 1, 1))
     scene = ti.ui.Scene()
     camera = ti.ui.Camera()
-    camera.position(0.8, 1.5, 4.0)
+    camera.position(0.5, 0.0, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
     vertices, faces, edges = he.load_obj("data/cube.obj")
     mesh = Mesh(vertices, faces, edges)
+    vertex_field = he.convert_to_vertex_field(vertices)
+    index_field = he.convert_to_line_index_field(edges)
 
     face_points, edge_points = subdivide(mesh)
-    face_points, edge_points = subdivide(mesh)
-    face_points, edge_points = subdivide(mesh)
-
-    # # original mesh
-    # vertex_field = he.convert_to_vertex_field(vertices)
-    # line_index_field = he.convert_to_line_index_field(edges)
-
-    # new mesh
-    new_vertex_field = he.convert_to_vertex_field(vertices)
-    new_line_index_field = he.convert_to_line_index_field(edges)
-
-    # moved_vertex_field = he.convert_to_vertex_field(moved_vertices)
-    # new_vertex_field = he.convert_to_vertex_field(new_vertices)
-    # new_line_index_field = he.convert_to_line_index_field(new_edges)
+    new_vertex_field = he.convert_to_vertex_field(mesh.vertices)
+    new_index_field = he.convert_to_line_index_field(mesh.edges)
 
     while window.running:
         camera.track_user_inputs(window, movement_speed=0.03, hold_key=ti.ui.RMB)
@@ -148,18 +134,22 @@ def main():
         scene.point_light(pos=(0, 1, 2), color=(1, 1, 1))
         scene.ambient_light((0.5, 0.5, 0.5))
 
+        if gui.button("Subdivide"):
+            face_points, edge_points = subdivide(mesh)
+            new_vertex_field = he.convert_to_vertex_field(mesh.vertices)
+            new_index_field = he.convert_to_line_index_field(mesh.edges)
+
         # original mesh
-        # scene.particles(vertex_field, radius=0.02)  # vertex
-        # scene.lines(vertex_field, width=2, indices=line_index_field)  # edge
+        scene.particles(vertex_field, radius=0.02)
+        scene.lines(vertex_field, width=2, indices=index_field)
 
         # new mesh
-        scene.particles(new_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # vertex
-        scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # edge
+        scene.particles(new_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))
+        scene.lines(new_vertex_field, width=2, indices=new_index_field, color=(0.0, 0.0, 1.0))
 
-        scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))  # face points
-        scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))  # edge points
-        # scene.particles(moved_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # new vertex
-        # scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # new edge
+        # face points / edge points
+        scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))
+        scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))
 
         canvas.scene(scene)
         window.show()
