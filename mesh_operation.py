@@ -62,11 +62,25 @@ if __name__ == '__main__':
     camera.position(0.8, 1.5, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
-    vertices, faces, edges = he.load_obj("data/cube.obj")
+    vertices = [
+        he.Vertex(1, 1, 0),
+        he.Vertex(1, -1, 0),
+        he.Vertex(-1, -1, 0),
+        he.Vertex(-1, 1, 0)]
+    edges = [
+        he.HalfEdge(0, face=0, twin=7, next=1, prev=3),
+        he.HalfEdge(1, face=0, twin=6, next=2, prev=0),
+        he.HalfEdge(2, face=0, twin=5, next=3, prev=1),
+        he.HalfEdge(3, face=0, twin=4, next=0, prev=2),
+        he.HalfEdge(0, face=-1, twin=3, next=5, prev=7),
+        he.HalfEdge(3, face=-1, twin=2, next=6, prev=4),
+        he.HalfEdge(2, face=-1, twin=1, next=7, prev=5),
+        he.HalfEdge(1, face=-1, twin=0, next=4, prev=6)]
+    faces = [he.Face(0)]
     mesh = Mesh(vertices, faces, edges)
 
-    mesh.add_vertex_to_edge(0, ti.Vector([0.0, 1.0, 0.0]))
-    mesh.add_vertex_to_edge(1, ti.Vector([-0.5, 1.0, 0.0]))
+    mesh.add_vertex_to_edge(0, ti.Vector([0.5, 0.0, 0.0]))
+    mesh.add_vertex_to_edge(3, ti.Vector([0.0, 1.5, 0.0]))
 
     vertex_field = he.convert_to_vertex_field(mesh.vertices)
     line_index_field = he.convert_to_line_index_field(mesh.edges)
