@@ -61,11 +61,6 @@ class Mesh:
         original_f = f
 
         # 1. 全ての edge point を face point と結ぶ
-        # 2. 隣接する edge 同士の next, prev を埋める
-        # 3. ループが出来た分の face を追加する
-        # 4. 全ての edge の face を更新する
-
-        # 1. 全ての edge point を face point と結ぶ
         e = self.faces[f].edge
         start_e = e
         added_edges = []
@@ -74,7 +69,6 @@ class Mesh:
             if v in vs:
                 prev = self.edges[e].prev
 
-                # TODO: update face
                 new1 = self.add_edge(v, -1)  # v -> fp
                 new2 = self.add_edge(fp, -1)  # fp -> v
                 added_edges.append(new1)
@@ -86,12 +80,10 @@ class Mesh:
                 # update new1
                 self.edges[new1].prev = prev
                 self.edges[new1].twin = new2
-                # TODO: update .next
 
                 # update new2
                 self.edges[new2].next = e
                 self.edges[new2].twin = new1
-                # TODO: update .prev
 
                 # update e
                 self.edges[e].prev = new2
@@ -101,30 +93,21 @@ class Mesh:
                 break
 
         # 2. 隣接する edge 同士の next, prev を埋める
-        # for i in range(1, len(added_edges), 2):
-        print("added_edges:", added_edges)
-        if len(added_edges) <= 4:
-            print("f", f)
-            print("vs", vs)
-            exit()
-
-        for i in range(1, len(added_edges) - 1, 2):
+        # ex) [(1,2) (3,4) (5,6) (7,0)]
+        for i in range(1, len(added_edges) + 1, 2):
             e1 = added_edges[i]
-            e2 = added_edges[i+1]
-            # e2 = added_edges[(i + 1) % len(added_edges)]
+            e2 = added_edges[(i+1) % len(added_edges)]
             self.edges[e1].prev = e2
             self.edges[e2].next = e1
-            # print("e1,e2", e1, e2)
+            print(i)
 
-        # 最後のエッジと最初のエッジをつなぐ
-        e1 = added_edges[-1]
-        e2 = added_edges[0]
-        self.edges[e1].prev = e2
-        self.edges[e2].next = e1
+        # 追加した face point を追加した適当な edge につなぐ
+        # face point から出る方向であればどれでもいいため
+        # added_edges のインデックスが奇数ならOK
         self.vertices[fp].edge = added_edges[1]
-        # print("e1,e2", e1, e2)
 
         # 3. ループが出来た分の face を追加する
+        # 4. 全ての edge の face を更新する
         for i in range(2, len(added_edges), 2):
             e = added_edges[i]
             f = self.add_face(added_edges[i])

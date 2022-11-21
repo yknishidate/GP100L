@@ -97,8 +97,6 @@ def subdivide(mesh):
         v = mesh.add_vertex_to_edge(e, edge_points[i])
         added_vertices.append(v)
 
-    print("added_vertices:", added_vertices)
-    print("len(added_vertices):", len(added_vertices))
     for f in range(len(mesh.faces)):
         added_vertices_in_face = []
         for v in added_vertices:
@@ -110,8 +108,6 @@ def subdivide(mesh):
             if f == fv1 or f == fv2:
                 added_vertices_in_face.append(v)
 
-        print("face:", f)
-        print("added_vertices_in_face:", added_vertices_in_face)
         position = face_points[f]
         mesh.add_vertex_to_face(f, added_vertices_in_face, position)
 
