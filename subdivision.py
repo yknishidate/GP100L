@@ -1,9 +1,13 @@
 import taichi as ti
 import halfedge as he
 import copy
+from mesh_operation import Mesh
 
 
-def compute_face_points(vertices, faces, edges):
+def compute_face_points(mesh):
+    vertices = mesh.vertices
+    faces = mesh.faces
+    edges = mesh.edges
     face_points = ti.Vector.field(3, dtype=float, shape=len(faces))
     for f in range(len(faces)):
         sum_vertex = ti.Vector([0.0, 0.0, 0.0])
@@ -23,7 +27,7 @@ def compute_face_points(vertices, faces, edges):
     return face_points
 
 
-def compute_edge_points(vertices, edges, face_points):
+def compute_edge_points(mesh, face_points):
     edge_points = ti.Vector.field(3, dtype=float, shape=len(edges) // 2)
     added_edges = []
     for e1 in range(len(edges)):
@@ -39,17 +43,16 @@ def compute_edge_points(vertices, edges, face_points):
         f1 = edges[e1].face
         f2 = edges[edges[e1].twin].face
 
-        position = vertices[v1].position + vertices[v2].position
-        position += face_points[f1] + face_points[f2]
-        position /= 4.0
-
+        position = (vertices[v1].position + vertices[v2].position + face_points[f1] + face_points[f2]) / 4.0
         index = len(added_edges) - 1
         edge_points[index] = position
+        mesh.add_vertex_to_edge(e1, position)
     return edge_points
 
 
-def move_vertices(vertices, edges, face_points):
-    moved_vertices = copy.deepcopy(vertices)
+def move_vertices(mesh, face_points):
+    vertices = mesh.vertices
+    edges = mesh.edges
     for v in range(len(vertices)):
         average_face_point = ti.Vector([0.0, 0.0, 0.0])
         average_edge_midpoint = ti.Vector([0.0, 0.0, 0.0])
@@ -79,47 +82,18 @@ def move_vertices(vertices, edges, face_points):
 
         new_position = (average_face_point + 2.0 * average_edge_midpoint +
                         (count - 3.0) * vertices[v].position) / count
-        moved_vertices[v].position = new_position
-
-    return moved_vertices
+        vertices[v].position = new_position
 
 
-def subdivide(vertices, faces, edges):
-    face_points = compute_face_points(vertices, faces, edges)
-    edge_points = compute_edge_points(vertices, edges, face_points)
-    moved_vertices = move_vertices(vertices, edges, face_points)
+def subdivide(mesh):
+    new_mesh = copy.deepcopy(mesh)
+    face_points = compute_face_points(new_mesh)
+    move_vertices(new_mesh, face_points)
+    edge_points = compute_edge_points(new_mesh, face_points)
     print("face_points:", face_points.shape[0])
     print("edge_points:", edge_points.shape[0])
-
-    # copy moved vertices
-    new_vertices = copy.deepcopy(moved_vertices)
-
-    # # add face points
-    # f_offset = len(new_vertices)
-    # for f in range(face_points.shape[0]):
-    #     position = face_points[f]
-    #     new_vertices.append(he.Vertex(position.x, position.y, position.z))
-
-    # # add edge points
-    # e_offset = len(new_vertices)
-    # for e in range(edge_points.shape[0]):
-    #     position = edge_points[e]
-    #     new_vertices.append(he.Vertex(position.x, position.y, position.z))
-
-    # vertices: [moved_vertices][face_points][edge_points]
-    # connect face points and edge points
-    new_edges = []
-    # for e in range(len(edges)):
-    #     fp1 = edges[e].face + f_offset
-    #     ep = e + e_offset
-
-    #     # TODO: fix
-    #     new_edges.append(he.HalfEdge(fp1, -1))
-    #     new_edges[-1].next = e * 2 + 1
-    #     new_edges.append(he.HalfEdge(ep, -1))
-    #     # new_edges[-1].next = e * 2
-
-    return face_points, edge_points, moved_vertices, new_vertices, new_edges
+    return new_mesh
+    # return face_points, edge_points, moved_vertices, new_vertices, new_edges
 
 
 if __name__ == '__main__':
@@ -132,34 +106,23 @@ if __name__ == '__main__':
     camera.position(0.8, 1.5, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
-    # # create quad
-    # vertices = []
-    # vertices.append(he.Vertex(1, 1, 0))
-    # vertices.append(he.Vertex(1, -1, 0))
-    # vertices.append(he.Vertex(-1, -1, 0))
-    # vertices.append(he.Vertex(-1, 1, 0))
-    # edges = []
-    # edges.append(he.HalfEdge(0, face=0, twin=7, next=1, prev=3))
-    # edges.append(he.HalfEdge(1, face=0, twin=6, next=2, prev=0))
-    # edges.append(he.HalfEdge(2, face=0, twin=5, next=3, prev=1))
-    # edges.append(he.HalfEdge(3, face=0, twin=4, next=0, prev=2))
-    # edges.append(he.HalfEdge(0, face=-1, twin=3, next=5, prev=7))
-    # edges.append(he.HalfEdge(3, face=-1, twin=2, next=6, prev=4))
-    # edges.append(he.HalfEdge(2, face=-1, twin=1, next=7, prev=5))
-    # edges.append(he.HalfEdge(1, face=-1, twin=0, next=4, prev=6))
-    # faces = []
-    # faces.append(he.Face(0))
-
     vertices, faces, edges = he.load_obj("data/cube.obj")
-    face_points, edge_points, moved_vertices, new_vertices, new_edges = subdivide(vertices, faces, edges)
+    mesh = Mesh(vertices, faces, edges)
+
+    # face_points, edge_points, moved_vertices, new_vertices, new_edges = subdivide(mesh)
+    new_mesh = subdivide(mesh)
 
     # original mesh
     vertex_field = he.convert_to_vertex_field(vertices)
     line_index_field = he.convert_to_line_index_field(edges)
 
-    # moved_vertex_field = he.convert_to_vertex_field(moved_vertices)
-    # new_vertex_field = he.convert_to_vertex_field(new_vertices)
-    # new_line_index_field = he.convert_to_line_index_field(new_edges)
+    # new mesh
+    new_vertex_field = he.convert_to_vertex_field(new_mesh.vertices)
+    new_line_index_field = he.convert_to_line_index_field(new_mesh.edges)
+
+# moved_vertex_field = he.convert_to_vertex_field(moved_vertices)
+# new_vertex_field = he.convert_to_vertex_field(new_vertices)
+# new_line_index_field = he.convert_to_line_index_field(new_edges)
 
     while window.running:
         camera.track_user_inputs(window, movement_speed=0.03, hold_key=ti.ui.RMB)
@@ -167,11 +130,17 @@ if __name__ == '__main__':
         scene.point_light(pos=(0, 1, 2), color=(1, 1, 1))
         scene.ambient_light((0.5, 0.5, 0.5))
 
+        # original mesh
         scene.particles(vertex_field, radius=0.02)  # vertex
-        scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))  # face points
-        scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))  # edge points
-        # scene.particles(moved_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # new vertex
         scene.lines(vertex_field, width=2, indices=line_index_field)  # edge
+
+        # new mesh
+        scene.particles(new_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # vertex
+        scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # edge
+
+        # scene.particles(face_points, radius=0.02, color=(1.0, 0.0, 0.0))  # face points
+        # scene.particles(edge_points, radius=0.02, color=(0.0, 1.0, 0.0))  # edge points
+        # scene.particles(moved_vertex_field, radius=0.02, color=(0.0, 0.0, 1.0))  # new vertex
         # scene.lines(new_vertex_field, width=2, indices=new_line_index_field, color=(0.0, 0.0, 1.0))  # new edge
 
         canvas.scene(scene)

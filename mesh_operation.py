@@ -51,6 +51,9 @@ class Mesh:
 
         self.vertices[new_v].edge = new_e1
 
+    def add_edge_to_face(f, v1, v2):
+        pass
+
 
 if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
