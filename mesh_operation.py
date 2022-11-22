@@ -94,29 +94,27 @@ class Mesh:
         self.faces.append(he.Face(edge))
         return len(self.faces) - 1
 
-    def insert_edge_next(self, prev, e):
-        self.edges[prev].next = e
-        self.edges[e].prev = prev
+    def add_edge_between_vertices(self, v1, v2):
+        e1 = self.vertices[v1].edge
+        e2 = self.vertices[v2].edge
+        prev1 = self.edges[e1].prev
+        prev2 = self.edges[e2].prev
+        f1 = self.edges[prev1].face
+        f2 = self.add_face(e1)
+        new1 = self.add_edge(v1, f1)
+        new2 = self.add_edge(v2, f2)
 
-    # def insert_edge_prev()
+        self.edges[prev1].next = new1
+        self.edges[prev2].next = new2
+        self.edges[new1].prev = prev1
+        self.edges[new2].prev = prev2
+        self.edges[new1].next = e2
+        self.edges[new2].next = e1
+        self.edges[e2].prev = new1
+        self.edges[e1].prev = new2
 
-    # def add_edge_between_vertices(self, v1, v2):
-    #     new1 = self.add_edge(v1, -1)  # v -> fp
-    #     new2 = self.add_edge(v2, -1)  # fp -> v
-
-    #     # update prev
-    #     self.edges[prev].next = new1
-
-    #     # update new1
-    #     self.edges[new1].prev = prev
-    #     self.edges[new1].twin = new2
-
-    #     # update new2
-    #     self.edges[new2].next = e
-    #     self.edges[new2].twin = new1
-
-    #     # update e
-    #     self.edges[e].prev = new2
+        for e in self.all_edges_around_face(f2):
+            self.edges[e].face = f2
 
     def add_vertex_to_face(self, f, vs, position):
         fp = self.add_vertex(position)
@@ -191,25 +189,21 @@ def main():
     camera.position(0.8, 1.5, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
-    vertices = [
-        he.Vertex(ti.Vector([1, 1, 0])),
-        he.Vertex(ti.Vector([1, -1, 0])),
-        he.Vertex(ti.Vector([-1, -1, 0])),
-        he.Vertex(ti.Vector([-1, 1, 0]))]
-    edges = [
-        he.HalfEdge(0, face=0, twin=7, next=1, prev=3),
-        he.HalfEdge(3, face=0, twin=6, next=2, prev=0),
-        he.HalfEdge(2, face=0, twin=5, next=3, prev=1),
-        he.HalfEdge(1, face=0, twin=4, next=0, prev=2),
-        he.HalfEdge(0, face=-1, twin=3, next=5, prev=7),
-        he.HalfEdge(1, face=-1, twin=2, next=6, prev=4),
-        he.HalfEdge(2, face=-1, twin=1, next=7, prev=5),
-        he.HalfEdge(3, face=-1, twin=0, next=4, prev=6)]
-    faces = [he.Face(0)]
+    vertex_positions = [
+        ti.Vector([1, 1, 0]),
+        ti.Vector([1, -1, 0]),
+        ti.Vector([-1, -1, 0]),
+        ti.Vector([-1, 1, 0])]
+    face_indices = [[0, 1, 2, 3]]
+    vertices, faces, edges = he.build_half_edges(vertex_positions, face_indices)
     mesh = Mesh(vertices, faces, edges)
 
-    mesh.add_vertex_to_face(0, [0, 1, 2, 3], ti.Vector([0.0, 0.0, 0.0]))
-    mesh.add_vertex_to_edge(0, ti.Vector([0.0, 1.5, 0.0]))
+    mesh.add_edge_between_vertices(0, 2)
+    mesh.add_vertex_to_edge(0, ti.Vector([0.8, 0.0, 0.0]))
+    mesh.add_vertex_to_edge(2, ti.Vector([-0.8, 0.0, 0.0]))
+    print("num vertices", len(mesh.vertices))
+    print("num edges", len(mesh.edges))
+    print("num faces", len(mesh.faces))
 
     vertex_field = he.convert_to_vertex_field(mesh.vertices)
     line_index_field = he.convert_to_line_index_field(mesh.edges)
