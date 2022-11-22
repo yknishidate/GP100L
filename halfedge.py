@@ -3,13 +3,13 @@ import math
 
 
 class Vertex:
-    def __init__(self, position, edge=-1) -> None:
+    def __init__(self, position, edge=-1):
         self.position = position
         self.edge = edge
 
 
 class HalfEdge:
-    def __init__(self, origin, face=-1, twin=-1, next=-1, prev=-1) -> None:
+    def __init__(self, origin, face=-1, twin=-1, next=-1, prev=-1):
         self.origin = origin
         self.face = face
         self.twin = twin
@@ -18,7 +18,7 @@ class HalfEdge:
 
 
 class Face:
-    def __init__(self, edge) -> None:
+    def __init__(self, edge):
         self.edge = edge
 
 

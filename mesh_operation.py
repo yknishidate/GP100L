@@ -3,7 +3,7 @@ import halfedge as he
 
 
 class Mesh:
-    def __init__(self, vertices, faces, edges) -> None:
+    def __init__(self, vertices, faces, edges):
         self.vertices = vertices
         self.faces = faces
         self.edges = edges
