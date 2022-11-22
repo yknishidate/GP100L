@@ -5,40 +5,31 @@ from obj_loader import load_obj
 
 
 def compute_face_points(mesh):
-    vertices = mesh.vertices
-    faces = mesh.faces
-    edges = mesh.edges
-    face_points = ti.Vector.field(3, dtype=float, shape=len(faces))
-    for f in range(len(faces)):
+    face_points = ti.Vector.field(3, dtype=float, shape=len(mesh.faces))
+    for f in range(len(mesh.faces)):
         sum_vertex = ti.Vector([0.0, 0.0, 0.0])
         count = 0
         for e in mesh.all_edges_around_face(f):
-            v = edges[e].origin
-            sum_vertex += vertices[v].position
+            v = mesh.edges[e].origin
+            sum_vertex += mesh.vertices[v].position
             count += 1
         face_points[f] = sum_vertex / count
     return face_points
 
 
 def compute_edge_points(mesh, face_points):
-    edges = mesh.edges
-    vertices = mesh.vertices
-    edge_points = ti.Vector.field(3, dtype=float, shape=len(edges) // 2)
-    added_edges = []
-    for e1 in range(len(edges)):
-        if edges[e1].twin in added_edges:
-            continue
-        added_edges.append(e1)
-
+    edge_points = ti.Vector.field(3, dtype=float, shape=len(mesh.edges) // 2)
+    for i, e1 in enumerate(mesh.all_unique_edges()):
         v1 = mesh.origin_vertex(e1)
         v2 = mesh.next_vertex(e1)
         f1 = mesh.left_face(e1)
         f2 = mesh.right_face(e1)
+        v1_pos = mesh.vertices[v1].position
+        v2_pos = mesh.vertices[v2].position
 
-        position = (vertices[v1].position + vertices[v2].position + face_points[f1] + face_points[f2]) / 4.0
-        index = len(added_edges) - 1
-        edge_points[index] = position
-    return edge_points, added_edges
+        position = (v1_pos + v2_pos + face_points[f1] + face_points[f2]) / 4.0
+        edge_points[i] = position
+    return edge_points
 
 
 def move_vertices(mesh, face_points):
@@ -75,11 +66,11 @@ def move_vertices(mesh, face_points):
 
 def subdivide(mesh):
     face_points = compute_face_points(mesh)
-    edge_points, added_edges = compute_edge_points(mesh, face_points)
+    edge_points = compute_edge_points(mesh, face_points)
     move_vertices(mesh, face_points)
 
     added_vertices = []
-    for i, e in enumerate(added_edges):
+    for i, e in enumerate(mesh.all_unique_edges()):
         v = mesh.add_vertex_to_edge(e, edge_points[i])
         added_vertices.append(v)
 

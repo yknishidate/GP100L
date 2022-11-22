@@ -45,7 +45,13 @@ class Mesh:
             if e == start_e or e == -1:
                 break
 
-    # add element
+    def all_unique_edges(self):
+        unique_edges = []
+        for e in range(len(self.edges)):
+            if not self.edges[e].twin in unique_edges:
+                unique_edges.append(e)
+        return unique_edges
+
     def add_vertex(self, position):
         self.vertices.append(he.Vertex(position))
         return len(self.vertices) - 1
