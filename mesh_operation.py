@@ -8,7 +8,6 @@ class Mesh:
         self.faces = faces
         self.edges = edges
 
-    # getter related to edge
     def origin_vertex(self, e):
         return self.edges[e].origin
 
@@ -51,6 +50,12 @@ class Mesh:
             if not self.edges[e].twin in unique_edges:
                 unique_edges.append(e)
         return unique_edges
+
+    def is_inner_of_face(self, v, f):
+        e = self.vertices[v].edge
+        fv1 = self.left_face(e)
+        fv2 = self.right_face(e)
+        return f == fv1 or f == fv2
 
     def add_vertex(self, position):
         self.vertices.append(he.Vertex(position))

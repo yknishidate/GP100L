@@ -69,22 +69,19 @@ def subdivide(mesh):
     edge_points = compute_edge_points(mesh, face_points)
     move_vertices(mesh, face_points)
 
-    added_vertices = []
+    # add edge points
+    num_original_vertices = len(mesh.vertices)
     for i, e in enumerate(mesh.all_unique_edges()):
         v = mesh.add_vertex_to_edge(e, edge_points[i])
-        added_vertices.append(v)
 
+    # add face points
     for f in range(len(mesh.faces)):
         added_vertices_in_face = []
-        for v in added_vertices:
-            e = mesh.vertices[v].edge
-            fv1 = mesh.left_face(e)
-            fv2 = mesh.right_face(e)
-            if f == fv1 or f == fv2:
+        for v in range(num_original_vertices, len(mesh.vertices)):
+            if mesh.is_inner_of_face(v, f):
                 added_vertices_in_face.append(v)
 
-        position = face_points[f]
-        mesh.add_vertex_to_face(f, added_vertices_in_face, position)
+        mesh.add_vertex_to_face(f, added_vertices_in_face, face_points[f])
 
     return face_points, edge_points
 
