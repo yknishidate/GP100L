@@ -67,14 +67,14 @@ def render():
             if material == LIGHT:
                 color = weight * sphere_emission
                 break
-            if material == DIFFUSE:
+            elif material == DIFFUSE:
                 light_direction = ti.math.normalize(light_position - hit_position)
                 origin = hit_position + hit_normal * 0.001
                 hit_sphere = intersect_spheres(origin, light_direction, sphere_centers, sphere_radiuses)[3]
                 if hit_sphere == -1:
                     color = weight * sphere_color * ti.math.dot(hit_normal, light_direction)
                 break
-            if material == MIRROR:
+            elif material == MIRROR:
                 direction = reflect(direction, hit_normal)
                 origin = hit_position + direction * 0.001
                 weight *= sphere_color
