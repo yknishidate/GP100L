@@ -7,6 +7,21 @@ eps = 0.00001
 
 
 @ti.func
+def sample_sky_image(direction):
+    # 方向を球面座標系に変換
+    theta = ti.math.acos(direction.y)
+    phi = ti.math.atan2(direction.z, direction.x)
+    if phi < 0:
+        phi += 2.0 * math.pi
+
+    # (i, j)を計算
+    width, height = sky_image.shape[0], sky_image.shape[1]
+    i = int(phi / (2.0 * math.pi) * width)
+    j = height - int(theta / math.pi * height)
+    return sky_image[i, j] / 255.0
+
+
+@ti.func
 def sample_direction(normal):
     w = normal
     u = ti.math.normalize(ti.math.cross(ti.Vector([0.0, 1.0, 0.0]), w))
@@ -33,7 +48,9 @@ def render(frame: int):
         for depth in range(8):
             _, hit_position, hit_normal, hit_sphere = rt.intersect_spheres(origin, direction, sphere_centers, sphere_radiuses)
             if hit_sphere == -1:
-                color += weight * ti.Vector([0.8, 0.9, 1.0])
+                # color += weight * ti.Vector([0.8, 0.9, 1.0])
+                sky_color = sample_sky_image(direction)
+                color += weight * sky_color
                 break
             hit_emission = sphere_emissions[hit_sphere]
             hit_color = sphere_colors[hit_sphere]
@@ -50,6 +67,11 @@ def render(frame: int):
 
 if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
+
+    image_data = ti.tools.imread("data/modern_buildings_2_2k.hdr", 3)
+    sky_image = ti.Vector.field(3, dtype=float, shape=(image_data.shape[0], image_data.shape[1]))
+    sky_image.from_numpy(image_data)
+
     gui = ti.GUI("Pathtracing", res=(width, height), fast_gui=True)
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
     num_spheres = 3
@@ -66,6 +88,7 @@ if __name__ == '__main__':
     sphere_colors = ti.Vector.field(3, dtype=float, shape=num_spheres)
     sphere_colors[0] = (0.5, 0.5, 0.5)
     sphere_colors[1] = (0.9, 0.9, 0.9)
+
     frame = 0
     while gui.running:
         render(frame)
