@@ -1,35 +1,8 @@
 import taichi as ti
-import math
 
-ti.init(arch=ti.vulkan)
 width, height = 1024, 1024
 eps = 0.00001
-gui = ti.GUI("Raytracing", res=(width, height), fast_gui=True)
-colors = ti.Vector.field(3, dtype=float, shape=(width, height))
-num_spheres = 4
-sphere_centers = ti.Vector.field(3, dtype=float, shape=num_spheres)
-sphere_centers[0] = (0.0, -100.1, 0.0)
-sphere_centers[1] = (0.2, 0.0, 0.0)
-sphere_centers[2] = (-0.2, 0.0, 0.0)
-sphere_centers[3] = (0.0, 0.0, 0.0)
-sphere_radiuses = ti.field(dtype=float, shape=num_spheres)
-sphere_radiuses[0] = 100
-sphere_radiuses[1] = 0.1
-sphere_radiuses[2] = 0.1
-sphere_radiuses[3] = 0.1
-sphere_emissions = ti.Vector.field(3, dtype=float, shape=num_spheres)
-sphere_emissions[2] = (1.0, 1.0, 1.0)
-sphere_colors = ti.Vector.field(3, dtype=float, shape=num_spheres)
-sphere_colors[0] = (0.9, 0.9, 0.9)
-sphere_colors[1] = (1.0, 0.6, 0.6)
-sphere_colors[3] = (0.8, 0.8, 0.8)
-
 LIGHT, DIFFUSE, MIRROR, GLASS = 0, 1, 2, 3
-sphere_materials = ti.field(dtype=int, shape=num_spheres)
-sphere_materials[0] = DIFFUSE
-sphere_materials[1] = DIFFUSE
-sphere_materials[2] = LIGHT
-sphere_materials[3] = MIRROR
 
 
 @ti.func
@@ -54,12 +27,12 @@ def intersect_sphere(origin, direction, sphere_center, sphere_radius):
 
 
 @ti.func
-def intersect_spheres(origin, direction):
+def intersect_spheres(origin, direction, sphere_centers, sphere_radiuses):
     hit_distance = 10000.0
     hit_position = ti.Vector([0.0, 0.0, 0.0])
     hit_normal = ti.Vector([0.0, 0.0, 0.0])
     hit_sphere = -1
-    for s in range(num_spheres):
+    for s in range(sphere_centers.shape[0]):
         distance, position, normal = intersect_sphere(origin, direction, sphere_centers[s], sphere_radiuses[s])
         if distance < hit_distance:
             hit_distance = distance
@@ -84,7 +57,7 @@ def render():
         color = ti.Vector([0.0, 0.0, 0.0])
         weight = ti.Vector([1.0, 1.0, 1.0])
         for depth in range(4):
-            _, hit_position, hit_normal, hit_sphere = intersect_spheres(origin, direction)
+            _, hit_position, hit_normal, hit_sphere = intersect_spheres(origin, direction, sphere_centers, sphere_radiuses)
             if hit_sphere == -1:
                 color = weight * ti.Vector([0.8, 0.9, 1.0])
                 break
@@ -97,7 +70,7 @@ def render():
             if material == DIFFUSE:
                 light_direction = ti.math.normalize(light_position - hit_position)
                 origin = hit_position + hit_normal * 0.001
-                hit_sphere = intersect_spheres(origin, light_direction)[3]
+                hit_sphere = intersect_spheres(origin, light_direction, sphere_centers, sphere_radiuses)[3]
                 if hit_sphere == -1:
                     color = weight * sphere_color * ti.math.dot(hit_normal, light_direction)
                 break
@@ -109,7 +82,34 @@ def render():
         colors[i, j] = ti.math.clamp(color, 0.0, 1.0)
 
 
-while gui.running:
-    render()
-    gui.set_image(colors)
-    gui.show()
+if __name__ == '__main__':
+    ti.init(arch=ti.vulkan)
+    gui = ti.GUI("Raytracing", res=(width, height), fast_gui=True)
+    colors = ti.Vector.field(3, dtype=float, shape=(width, height))
+    num_spheres = 4
+    sphere_centers = ti.Vector.field(3, dtype=float, shape=num_spheres)
+    sphere_centers[0] = (0.0, -100.1, 0.0)
+    sphere_centers[1] = (0.2, 0.0, 0.0)
+    sphere_centers[2] = (-0.2, 0.0, 0.0)
+    sphere_centers[3] = (0.0, 0.0, 0.0)
+    sphere_radiuses = ti.field(dtype=float, shape=num_spheres)
+    sphere_radiuses[0] = 100
+    sphere_radiuses[1] = 0.1
+    sphere_radiuses[2] = 0.1
+    sphere_radiuses[3] = 0.1
+    sphere_emissions = ti.Vector.field(3, dtype=float, shape=num_spheres)
+    sphere_emissions[2] = (1.0, 1.0, 1.0)
+    sphere_colors = ti.Vector.field(3, dtype=float, shape=num_spheres)
+    sphere_colors[0] = (0.9, 0.9, 0.9)
+    sphere_colors[1] = (1.0, 0.6, 0.6)
+    sphere_colors[3] = (0.8, 0.8, 0.8)
+
+    sphere_materials = ti.field(dtype=int, shape=num_spheres)
+    sphere_materials[0] = DIFFUSE
+    sphere_materials[1] = DIFFUSE
+    sphere_materials[2] = LIGHT
+    sphere_materials[3] = MIRROR
+    while gui.running:
+        render()
+        gui.set_image(colors)
+        gui.show()

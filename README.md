@@ -1,9 +1,10 @@
-# Graphics Programming in 100 Lines
+# GP100L
 
-Tiny implementations of Computer Graphics Algorithms.
+Graphics Programming in 100 Lines
 
 ## Contents
 
+- [x] Raytracing (110 lines)
 - [x] Pathtracing (100 lines)
 - [x] SPH Simulation (99 lines)
 - [x] Half-Edge (120 lines)
