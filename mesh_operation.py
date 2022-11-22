@@ -8,6 +8,44 @@ class Mesh:
         self.faces = faces
         self.edges = edges
 
+    # getter related to edge
+    def origin_vertex(self, e):
+        return self.edges[e].origin
+
+    def next_vertex(self, e):
+        return self.origin_vertex(self.edges[e].next)
+
+    def next_edge_around_vertex(self, e):
+        twin = self.edges[e].twin
+        return self.edges[twin].next
+
+    def left_face(self, e):
+        return self.edges[e].face
+
+    def right_face(self, e):
+        twin = self.edges[e].twin
+        return self.edges[twin].face
+
+    def all_edges_around_face(self, f):
+        e = self.faces[f].edge
+        start_e = e
+        while True:
+            e = self.edges[e].next
+            yield e
+            if e == start_e:
+                break
+
+    def all_edges_around_vertex(self, v):
+        e = self.vertices[v].edge
+        start_e = e
+        while True:
+            twin = self.edges[e].twin
+            e = self.edges[twin].next
+            yield e
+            if e == start_e:
+                break
+
+    # add element
     def add_vertex(self, position):
         self.vertices.append(he.Vertex(position))
         return len(self.vertices) - 1
