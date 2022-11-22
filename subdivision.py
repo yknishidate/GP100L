@@ -1,6 +1,7 @@
 import taichi as ti
 import halfedge as he
 from mesh_operation import Mesh
+from obj_loader import load_obj
 
 
 def compute_face_points(mesh):
@@ -119,7 +120,7 @@ def main():
     camera.position(0.5, 0.0, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
-    vertex_positions, face_indices = he.load_obj("data/cube.obj")
+    vertex_positions, face_indices = load_obj("data/cube.obj")
     vertices, faces, edges = he.build_half_edges(vertex_positions, face_indices)
     mesh = Mesh(vertices, faces, edges)
     vertex_field = he.convert_to_vertex_field(vertices)

@@ -12,7 +12,7 @@ Tiny implementations of Computer Graphics Algorithms.
 <p align="center">
 <img width="200" alt="" src="https://user-images.githubusercontent.com/30839669/202879206-871f86e3-4327-40a8-b006-e2f1e0544fd9.png">
 <img width="200" alt="" src="https://user-images.githubusercontent.com/30839669/202879237-c0aec041-3445-4212-ab60-31e677231bde.png">
-<img width="200" alt="" src="https://user-images.githubusercontent.com/30839669/202911192-aeb5bc13-a7aa-4369-9b7d-b5d3eadec466.png">
+<img width="200" alt="" src="https://user-images.githubusercontent.com/30839669/203185003-142ad024-5718-4525-8cb1-49121b15bc3f.png">
 <img width="200" alt="" src="https://user-images.githubusercontent.com/30839669/203092472-52340979-739c-4eb8-956d-6c2eba1e3565.png">
 </p>
 
