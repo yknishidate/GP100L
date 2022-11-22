@@ -1,6 +1,7 @@
 import taichi as ti
 import math
 
+
 class Vertex:
     def __init__(self, position, edge=-1) -> None:
         self.position = position
@@ -19,7 +20,6 @@ class HalfEdge:
 class Face:
     def __init__(self, edge) -> None:
         self.edge = edge
-
 
 
 def build_half_edges(vertex_positions, face_indices):
@@ -78,6 +78,7 @@ def convert_to_line_index_field(edges):
             line_index_field[index + 1] = v2
             index += 2
     return line_index_field
+
 
 def main():
     ti.init(arch=ti.vulkan)
@@ -138,6 +139,6 @@ def main():
             around_vertex_edge = edges[twin].next
         frame += 1
 
+
 if __name__ == '__main__':
     main()
-    
