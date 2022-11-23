@@ -10,6 +10,7 @@ Graphics Programming in 100 Lines
 - [x] Half-Edge (120 lines)
 - [x] Catmull-Clark subdivision (180 lines)
 - [x] Perlin noise (100 lines)
+- [x] Bezier curve (70 lines)
 
 <p align="left">
 <img width="200" alt="" src="docs/images/raytracing.jpg">
