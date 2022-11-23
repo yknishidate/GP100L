@@ -1,9 +1,5 @@
 import taichi as ti
 
-ti.init(arch=ti.vulkan)
-width, height = 1024, 1024
-p = ti.field(dtype=int, shape=512)
-
 
 @ti.func
 def fade(t: float) -> float:
@@ -101,6 +97,9 @@ def render(size: int):
 
 
 if __name__ == '__main__':
+    ti.init(arch=ti.vulkan)
+    width, height = 1024, 1024
+    p = ti.field(dtype=int, shape=512)
     window = ti.ui.Window("Perlin noise", res=(width, height))
     canvas = window.get_canvas()
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
