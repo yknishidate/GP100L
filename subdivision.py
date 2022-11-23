@@ -4,10 +4,9 @@ from obj_loader import load_obj
 
 
 class Mesh:
-    def __init__(self, vertices, faces, edges):
-        self.vertices = vertices
-        self.faces = faces
-        self.edges = edges
+    def __init__(self, file_path):
+        vertex_positions, face_indices = load_obj(file_path)
+        self.vertices, self.faces, self.edges = he.build_half_edges(vertex_positions, face_indices)
 
     def get_vertices(self, e):
         return self.edges[e].origin, self.edges[self.edges[e].next].origin
@@ -147,11 +146,9 @@ if __name__ == '__main__':
     camera.position(0.0, 0.0, 4.0)
     camera.lookat(0.0, 0.0, 0.0)
 
-    vertex_positions, face_indices = load_obj("data/cube.obj")
-    vertices, faces, edges = he.build_half_edges(vertex_positions, face_indices)
-    mesh = Mesh(vertices, faces, edges)
-    vertex_field = he.convert_to_vertex_field(vertices)
-    index_field = he.convert_to_line_index_field(edges)
+    mesh = Mesh("data/cube.obj")
+    vertex_field = he.convert_to_vertex_field(mesh.vertices)
+    index_field = he.convert_to_line_index_field(mesh.edges)
 
     face_points, edge_points = subdivide(mesh)
     new_vertex_field = he.convert_to_vertex_field(mesh.vertices)
