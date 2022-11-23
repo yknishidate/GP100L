@@ -9,18 +9,11 @@ class Mesh:
         self.faces = faces
         self.edges = edges
 
-    def origin_vertex(self, e):
-        return self.edges[e].origin
+    def get_vertices(self, e):
+        return self.edges[e].origin, self.edges[self.edges[e].next].origin
 
-    def next_vertex(self, e):
-        return self.origin_vertex(self.edges[e].next)
-
-    def left_face(self, e):
-        return self.edges[e].face
-
-    def right_face(self, e):
-        twin = self.edges[e].twin
-        return self.edges[twin].face
+    def get_faces(self, e):
+        return self.edges[e].face, self.edges[self.edges[e].twin].face
 
     def all_edges_around_face(self, f):
         e = self.faces[f].edge
@@ -65,10 +58,8 @@ def compute_face_points(mesh):
 def compute_edge_points(mesh, face_points):
     edge_points = ti.Vector.field(3, dtype=float, shape=len(mesh.edges) // 2)
     for i, e1 in enumerate(mesh.all_unique_edges()):
-        v1 = mesh.origin_vertex(e1)
-        v2 = mesh.next_vertex(e1)
-        f1 = mesh.left_face(e1)
-        f2 = mesh.right_face(e1)
+        v1, v2 = mesh.get_vertices(e1)
+        f1, f2 = mesh.get_faces(e1)
         v1_pos = mesh.vertices[v1].position
         v2_pos = mesh.vertices[v2].position
 
@@ -92,12 +83,10 @@ def move_vertices(mesh, face_points):
             sum_face_point += face_points[f]
 
             # add edge midpoint
-            v1 = mesh.origin_vertex(e)
-            v2 = mesh.next_vertex(e)
+            v1, v2 = mesh.get_vertices(e)
             v1_pos = vertices[v1].position
             v2_pos = vertices[v2].position
             sum_edge_midpoint += (v1_pos + v2_pos) / 2.0
-
             count += 1
 
         fp = sum_face_point / count
