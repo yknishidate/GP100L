@@ -1,21 +1,6 @@
 import taichi as ti
 import math
 
-# Initialize taichi
-ti.init(arch=ti.vulkan)
-window = ti.ui.Window("SPH", (1024, 1024), vsync=True)
-canvas = window.get_canvas()
-canvas.set_background_color((1, 1, 1))
-
-radius = 0.03
-num_particles = 1000
-num_active_particles = 0
-positions = ti.Vector.field(2, dtype=float, shape=num_particles)
-densities = ti.field(dtype=float, shape=num_particles)
-pressures = ti.field(dtype=float, shape=num_particles)
-velocities = ti.Vector.field(2, dtype=float, shape=num_particles)
-colors = ti.Vector.field(3, dtype=float, shape=num_particles)
-
 
 @ti.kernel
 def initialize():
@@ -88,12 +73,26 @@ def update(num_active_particles: int):
             positions[i].y = ti.math.max(positions[i].y, 0.01)
 
         # Compute color
-        colors[i].x = pressures[i]
+        colors[i] = (0.7 - pressures[i], 0.7 - pressures[i], 1.0)
 
 
-initialize()
-while window.running:
-    num_active_particles = min(num_active_particles + 5, num_particles)
-    update(num_active_particles)
-    canvas.circles(positions, radius / 2.0, per_vertex_color=colors)
-    window.show()
+if __name__ == '__main__':
+    ti.init(arch=ti.vulkan)
+    window = ti.ui.Window("SPH", (1024, 1024), vsync=True)
+    canvas = window.get_canvas()
+    canvas.set_background_color((1, 1, 1))
+
+    radius = 0.03
+    num_particles = 1000
+    num_active_particles = 0
+    positions = ti.Vector.field(2, dtype=float, shape=num_particles)
+    densities = ti.field(dtype=float, shape=num_particles)
+    pressures = ti.field(dtype=float, shape=num_particles)
+    velocities = ti.Vector.field(2, dtype=float, shape=num_particles)
+    colors = ti.Vector.field(3, dtype=float, shape=num_particles)
+    initialize()
+    while window.running:
+        num_active_particles = min(num_active_particles + 5, num_particles)
+        update(num_active_particles)
+        canvas.circles(positions, radius / 2.0, per_vertex_color=colors)
+        window.show()
