@@ -69,20 +69,41 @@ def subdivide(mesh):
     edge_points = compute_edge_points(mesh, face_points)
     move_vertices(mesh, face_points)
 
+    vertex_positions = []
+    # add original vertices
+    for v in range(len(mesh.vertices)):
+        vertex_positions.append(mesh.vertices[v].position)
+
     # add edge points
-    num_original_vertices = len(mesh.vertices)
+    edge_to_edge_points = {}
     for i, e in enumerate(mesh.all_unique_edges()):
-        v = mesh.add_vertex_to_edge(e, edge_points[i])
+        vertex_positions.append(edge_points[i])
+        twin = mesh.edges[e].twin
+        edge_to_edge_points[e] = len(vertex_positions) - 1
+        edge_to_edge_points[twin] = len(vertex_positions) - 1
 
     # add face points
+    face_to_face_points = {}
     for f in range(len(mesh.faces)):
-        added_vertices_in_face = []
-        for v in range(num_original_vertices, len(mesh.vertices)):
-            if mesh.is_inner_of_face(v, f):
-                added_vertices_in_face.append(v)
+        vertex_positions.append(face_points[f])
+        face_to_face_points[f] = len(vertex_positions) - 1
 
-        mesh.add_vertex_to_face(f, added_vertices_in_face, face_points[f])
+        # added_vertices_in_face = []
+        # for v in range(num_original_vertices, len(mesh.vertices)):
+        #     if mesh.is_inner_of_face(v, f):
+        #         added_vertices_in_face.append(v)
 
+    face_indices = []
+    for f in range(len(mesh.faces)):
+        es = [e for e in mesh.all_edges_around_face(f)]
+        vs = [mesh.edges[e].origin for e in es]
+        for i in range(len(vs)):
+            indices = [vs[i],
+                       edge_to_edge_points[es[i]],
+                       face_to_face_points[f],
+                       edge_to_edge_points[es[i-1]]]
+            face_indices.append(indices)
+    mesh.vertices, mesh.faces, mesh.edges = he.build_half_edges(vertex_positions, face_indices)
     return face_points, edge_points
 
 
