@@ -1,7 +1,52 @@
 import taichi as ti
 import halfedge as he
-from mesh_operation import Mesh
 from obj_loader import load_obj
+
+
+class Mesh:
+    def __init__(self, vertices, faces, edges):
+        self.vertices = vertices
+        self.faces = faces
+        self.edges = edges
+
+    def origin_vertex(self, e):
+        return self.edges[e].origin
+
+    def next_vertex(self, e):
+        return self.origin_vertex(self.edges[e].next)
+
+    def left_face(self, e):
+        return self.edges[e].face
+
+    def right_face(self, e):
+        twin = self.edges[e].twin
+        return self.edges[twin].face
+
+    def all_edges_around_face(self, f):
+        e = self.faces[f].edge
+        start_e = e
+        while True:
+            e = self.edges[e].next
+            yield e
+            if e == start_e or e == -1:
+                break
+
+    def all_edges_around_vertex(self, v):
+        e = self.vertices[v].edge
+        start_e = e
+        while True:
+            twin = self.edges[e].twin
+            e = self.edges[twin].next
+            yield e
+            if e == start_e or e == -1:
+                break
+
+    def all_unique_edges(self):
+        unique_edges = []
+        for e in range(len(self.edges)):
+            if not self.edges[e].twin in unique_edges:
+                unique_edges.append(e)
+        return unique_edges
 
 
 def compute_face_points(mesh):
@@ -88,11 +133,6 @@ def subdivide(mesh):
         vertex_positions.append(face_points[f])
         face_to_face_points[f] = len(vertex_positions) - 1
 
-        # added_vertices_in_face = []
-        # for v in range(num_original_vertices, len(mesh.vertices)):
-        #     if mesh.is_inner_of_face(v, f):
-        #         added_vertices_in_face.append(v)
-
     face_indices = []
     for f in range(len(mesh.faces)):
         es = [e for e in mesh.all_edges_around_face(f)]
@@ -107,7 +147,7 @@ def subdivide(mesh):
     return face_points, edge_points
 
 
-def main():
+if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Subdivision", (1024, 1024), vsync=True)
     gui = window.get_gui()
@@ -153,7 +193,3 @@ def main():
 
         canvas.scene(scene)
         window.show()
-
-
-if __name__ == '__main__':
-    main()
