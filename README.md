@@ -21,7 +21,7 @@ Graphics Programming in 100 Lines
 ## Getting started
 
 ```sh
-git clone https://github.com/yknishidate/gpu_graphics_in_100_lines.git
+git clone https://github.com/yknishidate/GP100L.git
 
 pip install taichi
 ```
