@@ -9,7 +9,7 @@ Graphics Programming in 100 Lines
 - [x] SPH Simulation (99 lines)
 - [x] Half-Edge (120 lines)
 - [x] Catmull-Clark subdivision (140 lines)
-- [x] Perlin noise (130 lines)
+- [x] Perlin noise (100 lines)
 
 <p align="center">
 <img width="200" alt="" src="https://user-images.githubusercontent.com/30839669/203312261-2193e8f3-ee80-4920-9194-c2170aae6287.png">
