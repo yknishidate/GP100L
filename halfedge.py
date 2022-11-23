@@ -80,7 +80,7 @@ def convert_to_line_index_field(edges):
     return line_index_field
 
 
-def main():
+if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
     window = ti.ui.Window("Half-Edge", (1024, 1024), vsync=True)
     canvas = window.get_canvas()
@@ -138,7 +138,3 @@ def main():
             twin = edges[around_vertex_edge].twin
             around_vertex_edge = edges[twin].next
         frame += 1
-
-
-if __name__ == '__main__':
-    main()
