@@ -1,5 +1,4 @@
 import taichi as ti
-import math
 
 ti.init(arch=ti.vulkan)
 width, height = 1024, 1024
@@ -95,14 +94,15 @@ def perlin(x: float, y: float, z: float) -> float:
 
 
 @ti.kernel
-def render():
+def render(size: int):
     for i, j in colors:
-        value = perlin(i / 64, j / 64, 0.34)
+        value = perlin(i / size, j / size, 0.34)
         colors[i, j] = (value, value, value)
 
 
 if __name__ == '__main__':
-    gui = ti.GUI("Perlin noise", res=(width, height), fast_gui=True)
+    window = ti.ui.Window("Perlin noise", res=(width, height))
+    canvas = window.get_canvas()
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
 
     permutation = [
@@ -126,7 +126,13 @@ if __name__ == '__main__':
     for x in range(512):
         p[x] = permutation[x % 256]
 
-    render()
-    while gui.running:
-        gui.set_image(colors)
-        gui.show()
+    render(64)
+    gui = window.get_gui()
+    old_size = 64
+    while window.running:
+        new_size = gui.slider_int("Size", old_size, 1, 128)
+        if new_size != old_size:
+            render(new_size)
+            old_size = new_size
+        canvas.set_image(colors)
+        window.show()
