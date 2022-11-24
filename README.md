@@ -6,8 +6,8 @@ Graphics Programming in 100 Lines
 
 - [x] Ray tracing (110 lines)
 - [x] Path tracing (100 lines)
-- [x] SPH Simulation (99 lines)
-- [x] Half-Edge (120 lines)
+- [x] SPH simulation (100 lines)
+- [x] Half-edge (120 lines)
 - [x] Catmull-Clark subdivision (180 lines)
 - [x] Perlin noise (100 lines)
 - [x] Bezier curve (70 lines)
