@@ -9,9 +9,10 @@ Graphics Programming in 100 Lines
 - [x] SPH simulation (100 lines)
 - [x] Half-edge (120 lines)
 - [x] Catmull-Clark subdivision (180 lines)
-- [x] Perlin noise (100 lines)
 - [x] Bezier curve (70 lines)
+- [x] Perlin noise (100 lines)
 - [x] Poisson disk sampling (40 lines)
+- [x] Voronoi (50 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -19,9 +20,10 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/sph.jpg">
 <img width="24%" alt="" src="docs/images/half_edge.jpg">
 <img width="24%" alt="" src="docs/images/subdivision.jpg">
-<img width="24%" alt="" src="docs/images/perlin_noise.jpg">
 <img width="24%" alt="" src="docs/images/bezier.jpg">
+<img width="24%" alt="" src="docs/images/perlin_noise.jpg">
 <img width="24%" alt="" src="docs/images/poisson_disk.jpg">
+<img width="24%" alt="" src="docs/images/voronoi.jpg">
 </p>
 
 ## Getting started
