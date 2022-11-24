@@ -11,6 +11,7 @@ Graphics Programming in 100 Lines
 - [x] Catmull-Clark subdivision (180 lines)
 - [x] Perlin noise (100 lines)
 - [x] Bezier curve (70 lines)
+- [x] Poisson disk sampling (40 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -20,6 +21,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/subdivision.jpg">
 <img width="24%" alt="" src="docs/images/perlin_noise.jpg">
 <img width="24%" alt="" src="docs/images/bezier.jpg">
+<img width="24%" alt="" src="docs/images/poisson_disk.jpg">
 </p>
 
 ## Getting started
