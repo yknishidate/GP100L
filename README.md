@@ -13,13 +13,13 @@ Graphics Programming in 100 Lines
 - [x] Bezier curve (70 lines)
 
 <p align="left">
-<img width="200" alt="" src="docs/images/raytracing.jpg">
-<img width="200" alt="" src="docs/images/pathtracing.jpg">
-<img width="200" alt="" src="docs/images/sph.jpg">
-<img width="200" alt="" src="docs/images/half_edge.jpg">
-<img width="200" alt="" src="docs/images/subdivision.jpg">
-<img width="200" alt="" src="docs/images/perlin_noise.jpg">
-<img width="200" alt="" src="docs/images/bezier.jpg">
+<img width="24%" alt="" src="docs/images/raytracing.jpg">
+<img width="24%" alt="" src="docs/images/pathtracing.jpg">
+<img width="24%" alt="" src="docs/images/sph.jpg">
+<img width="24%" alt="" src="docs/images/half_edge.jpg">
+<img width="24%" alt="" src="docs/images/subdivision.jpg">
+<img width="24%" alt="" src="docs/images/perlin_noise.jpg">
+<img width="24%" alt="" src="docs/images/bezier.jpg">
 </p>
 
 ## Getting started

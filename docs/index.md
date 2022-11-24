@@ -8,12 +8,12 @@ GP100L - Graphics Programming in 100 Lines
 - [Half-Edge (120 lines)](./halfedge.html)
 
 <p align="left">
-<img width="200" alt="" src="images/raytracing.jpg">
-<img width="200" alt="" src="images/pathtracing.jpg">
-<img width="200" alt="" src="images/sph.jpg">
-<img width="200" alt="" src="images/half_edge.jpg">
-<img width="200" alt="" src="images/subdivision.jpg">
-<img width="200" alt="" src="images/perlin_noise.jpg">
+<img width="24%" alt="" src="images/raytracing.jpg">
+<img width="24%" alt="" src="images/pathtracing.jpg">
+<img width="24%" alt="" src="images/sph.jpg">
+<img width="24%" alt="" src="images/half_edge.jpg">
+<img width="24%" alt="" src="images/subdivision.jpg">
+<img width="24%" alt="" src="images/perlin_noise.jpg">
 </p>
 
 # Getting started
