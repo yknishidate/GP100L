@@ -14,11 +14,14 @@ def exist_neighbors(pos: ti.template(), num_particles: int, radius: float) -> bo
 
 
 @ti.kernel
-def sample(num_particles: int, radius: float):
+def sample(num_particles: int, radius: float) -> int:
+    added = 0
     for i in range(10):
         pos = ti.Vector([ti.random(), ti.random()])
         if not exist_neighbors(pos, num_particles, radius * 4):
             positions[num_particles] = pos
+            added = 1
+    return added
 
 
 if __name__ == '__main__':
@@ -34,8 +37,7 @@ if __name__ == '__main__':
 
     while window.running:
         if num_particles != num_max_particles:
-            sample(num_particles, radius)
-            num_particles += 1
+            num_particles += sample(num_particles, radius)
 
         canvas.circles(positions, radius)
         window.show()
