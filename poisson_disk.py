@@ -1,17 +1,15 @@
 import taichi as ti
-import random
-import math
 
 
 @ti.func
-def exist_neighbors(pos: ti.template(), num_active_particles: int, radius: float) -> int:
-    found = 0
+def exist_neighbors(pos: ti.template(), num_active_particles: int, radius: float) -> bool:
+    found = False
     for i in range(num_active_particles):
         p = positions[i]
         vec = p - pos
         dist = ti.sqrt(vec.x * vec.x + vec.y * vec.y)
         if dist < radius:
-            found = 1
+            found = True
     return found
 
 
@@ -19,7 +17,7 @@ def exist_neighbors(pos: ti.template(), num_active_particles: int, radius: float
 def sample(num_active_particles: int, radius: float):
     for i in range(10):
         pos = ti.Vector([ti.random(), ti.random()])
-        if exist_neighbors(pos, num_active_particles, radius * 2) == 0:
+        if not exist_neighbors(pos, num_active_particles, radius * 4):
             positions[num_active_particles] = pos
 
 
@@ -29,7 +27,7 @@ if __name__ == '__main__':
     canvas = window.get_canvas()
     canvas.set_background_color((1, 1, 1))
 
-    radius = 0.02
+    radius = 0.01
     num_particles = 1000
     num_active_particles = 0
     positions = ti.Vector.field(2, dtype=float, shape=num_particles)
