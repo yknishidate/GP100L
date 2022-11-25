@@ -78,7 +78,7 @@ def update(num_active_particles: int):
 
 if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
-    window = ti.ui.Window("SPH", (1024, 1024), vsync=True)
+    window = ti.ui.Window("Particle-based fluid", (1024, 1024), vsync=True)
     canvas = window.get_canvas()
     canvas.set_background_color((1, 1, 1))
 

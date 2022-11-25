@@ -6,7 +6,6 @@ GitHub: [yknishidate/GP100L](https://github.com/yknishidate/GP100L)
 # Contents
 
 - [Pathtracing (100 lines)](./pathtracing.html)
-- [SPH Simulation (99 lines)](./sph.html)
 - [Half-Edge (120 lines)](./halfedge.html)
 
 <p align="left">

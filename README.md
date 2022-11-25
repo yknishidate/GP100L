@@ -6,26 +6,26 @@ Graphics Programming in 100 Lines
 
 - [x] Ray tracing (110 lines)
 - [x] Path tracing (100 lines)
-- [x] SPH simulation (100 lines)
+- [x] Particle-based fluid (100 lines)
+- [x] Grid-based fluid (110 lines)
 - [x] Half-edge (120 lines)
 - [x] Catmull-Clark subdivision (180 lines)
 - [x] Bezier curve (70 lines)
 - [x] Perlin noise (100 lines)
 - [x] Poisson disk sampling (40 lines)
 - [x] Voronoi (50 lines)
-- [x] Grid-based fluid (110 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
 <img width="24%" alt="" src="docs/images/pathtracing.jpg">
-<img width="24%" alt="" src="docs/images/sph.jpg">
+<img width="24%" alt="" src="docs/images/particle_fluid.jpg">
+<img width="24%" alt="" src="docs/images/grid_fluid.jpg">
 <img width="24%" alt="" src="docs/images/half_edge.jpg">
 <img width="24%" alt="" src="docs/images/subdivision.jpg">
 <img width="24%" alt="" src="docs/images/bezier.jpg">
 <img width="24%" alt="" src="docs/images/perlin_noise.jpg">
 <img width="24%" alt="" src="docs/images/poisson_disk.jpg">
 <img width="24%" alt="" src="docs/images/voronoi.jpg">
-<img width="24%" alt="" src="docs/images/grid_fluid.jpg">
 </p>
 
 ## Getting started
