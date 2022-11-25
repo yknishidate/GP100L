@@ -28,12 +28,12 @@ if __name__ == '__main__':
     canvas = window.get_canvas()
     canvas.set_background_color((1, 1, 1))
 
-    length = 0.2
+    length = 0.25
     num_joints = 4
     radius = 0.05
     joints = ti.Vector.field(2, dtype=float, shape=num_joints)
     angles = ti.field(dtype=float, shape=num_joints - 1)
-    joints[0] = (0.3, 0.5)
+    joints[0] = (0.3, 0.3)
 
     joints_indices = ti.field(dtype=int, shape=(num_joints - 1) * 2)
     for i in range(num_joints):
