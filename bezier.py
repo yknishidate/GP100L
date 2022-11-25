@@ -50,9 +50,7 @@ if __name__ == '__main__':
             # select point
             if selected is None:
                 for i in range(num_points):
-                    vec = cursor - points[i]
-                    dist = math.sqrt(vec.x * vec.x + vec.y * vec.y)
-                    if dist < radius:
+                    if math.dist(cursor, points[i]) < radius:
                         selected = i
                         break
 
