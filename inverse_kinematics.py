@@ -1,7 +1,4 @@
 import taichi as ti
-import math
-
-length = 0.2
 
 
 @ti.kernel
@@ -20,7 +17,6 @@ def update_angle(joint: int):
     last = num_joints - 1
     to_target = ti.math.normalize(target[0] - joints[joint])
     to_last = ti.math.normalize(joints[last] - joints[joint])
-
     angle_target = ti.math.atan2(to_target.x, to_target.y)
     angle_last = ti.math.atan2(to_last.x, to_last.y)
     angles[joint] -= angle_target - angle_last
@@ -32,6 +28,7 @@ if __name__ == '__main__':
     canvas = window.get_canvas()
     canvas.set_background_color((1, 1, 1))
 
+    length = 0.2
     num_joints = 4
     radius = 0.05
     joints = ti.Vector.field(2, dtype=float, shape=num_joints)
