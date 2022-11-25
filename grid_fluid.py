@@ -1,6 +1,10 @@
 import taichi as ti
 import time
-from perlin_noise import PerlinNoise, lerp
+
+
+@ti.func
+def lerp(x, y, t):
+    return x * (1 - t) + y * t
 
 
 @ti.func
@@ -17,17 +21,7 @@ def sample_lerp(data: ti.template(), normed_pos: ti.template()):
     return lerp(val0, val1, ty)
 
 
-# @ti.kernel
-# def init_force():
-#     for i, j in colors:
-#         # x = perlin.noise(i / 256, j / 256, 0.34) - 0.5
-#         # y = perlin.noise(i / 256, j / 256, 0.68) - 0.5
-#         # force[i, j] = (x, y)
-#         if
-#         force[i, j] = (i / width - 0.5, j / height - 0.5)
-
-
-@ti.func
+@ti.kernel
 def compute_pressure():
     for i, j in colors:
         x0 = pressure[i - 1, j]
@@ -47,10 +41,11 @@ def add_force(cursor: ti.template(), cursor_move: ti.template()):
 
 
 @ti.kernel
-def advect():
+def advect(dt: float):
     for i, j in colors:
-        offset = velocity[i, j] * 0.05
-        velocity[i, j] = velocity[i - int(offset.x * width), j - int(offset.y * height)]
+        offset = velocity[i, j] * dt
+        pos = ti.Vector([i / width, j / height])
+        velocity[i, j] = sample_lerp(velocity, pos - offset)
 
 
 @ti.kernel
@@ -66,13 +61,7 @@ def compute_divergence():
 
 
 @ti.kernel
-def render(dt: float):
-
-    compute_pressure()
-    compute_pressure()
-    compute_pressure()
-    compute_pressure()
-    compute_pressure()
+def subtract_pressure_gradient():
     for i, j in colors:
         x0 = pressure[i - 1, j]
         x1 = pressure[i + 1, j]
@@ -83,10 +72,12 @@ def render(dt: float):
         grad = ti.Vector([dx, dy])
         velocity[i, j] -= grad
 
+
+@ti.kernel
+def render():
     for i, j in colors:
-        colors[i, j].xz = ti.abs(velocity[i, j].xy * 5)
-        # colors[i, j].x = ti.abs(divergence[i, j] * 5)
-        # colors[i, j].x = ti.abs(pressure[i, j] * 5)
+        colors[i, j].xy = ti.abs(velocity[i, j] * 5)
+        colors[i, j].z = ti.abs(pressure[i, j] * 5)
 
 
 if __name__ == '__main__':
@@ -98,8 +89,6 @@ if __name__ == '__main__':
     velocity = ti.Vector.field(2, dtype=float, shape=(width, height))
     divergence = ti.field(dtype=float, shape=(width, height))
     pressure = ti.field(dtype=float, shape=(width, height))
-    perlin = PerlinNoise()
-    # init_force()
 
     last_time = time.time()
     last_cursor = ti.Vector(window.get_cursor_pos())
@@ -107,11 +96,13 @@ if __name__ == '__main__':
         cursor = ti.Vector(window.get_cursor_pos())
         t = time.time()
         add_force(cursor, (cursor - last_cursor))
-        advect()
+        advect(t - last_time)
         compute_divergence()
-        render(t - last_time)
+        for _ in range(5):
+            compute_pressure()
+        subtract_pressure_gradient()
+        render()
 
-        # ti.profiler.print_scoped_profiler_info()
         canvas.set_image(colors)
         window.show()
         last_cursor = cursor
