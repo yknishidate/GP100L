@@ -1,6 +1,6 @@
 import taichi as ti
 import math
-from raytracing import intersect_spheres, reflect
+from raytracing import intersect_spheres, reflect, eps
 
 
 @ti.func
@@ -70,7 +70,6 @@ def render(frame: int):
 if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
     width, height = 1024, 1024
-    eps = 0.00001
     LIGHT, DIFFUSE, MIRROR = 0, 1, 2
     image_data = ti.tools.imread("data/modern_buildings_2_2k.hdr", 3)
     sky_image = ti.Vector.field(3, dtype=float, shape=(image_data.shape[0], image_data.shape[1]))

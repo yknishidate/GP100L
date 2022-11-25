@@ -1,4 +1,5 @@
 import taichi as ti
+eps = 0.00001
 
 
 @ti.func
@@ -81,7 +82,6 @@ def render():
 if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
     width, height = 1024, 1024
-    eps = 0.00001
     LIGHT, DIFFUSE, MIRROR, GLASS = 0, 1, 2, 3
     gui = ti.GUI("Raytracing", res=(width, height), fast_gui=True)
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
