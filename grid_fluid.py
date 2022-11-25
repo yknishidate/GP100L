@@ -104,6 +104,9 @@ if __name__ == '__main__':
         render()
 
         canvas.set_image(colors)
+        if window.get_event(ti.ui.PRESS):
+            if window.event.key == 's':
+                window.save_image("docs/images/grid_fluid.jpg")
         window.show()
         last_cursor = cursor
         last_time = t

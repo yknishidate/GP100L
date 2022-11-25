@@ -13,6 +13,7 @@ Graphics Programming in 100 Lines
 - [x] Perlin noise (100 lines)
 - [x] Poisson disk sampling (40 lines)
 - [x] Voronoi (50 lines)
+- [x] Grid-based fluid (110 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -24,6 +25,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/perlin_noise.jpg">
 <img width="24%" alt="" src="docs/images/poisson_disk.jpg">
 <img width="24%" alt="" src="docs/images/voronoi.jpg">
+<img width="24%" alt="" src="docs/images/grid_fluid.jpg">
 </p>
 
 ## Getting started
