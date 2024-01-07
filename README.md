@@ -15,7 +15,7 @@ Graphics Programming in 100 Lines
 - [x] Poisson disk sampling (40 lines)
 - [x] Voronoi (50 lines)
 - [x] Inverse kinematics (60 lines)
-- [x] Sphere-capsule collision (90 lines)
+- [x] Sphere-capsule collision (70 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
