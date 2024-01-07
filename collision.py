@@ -17,14 +17,13 @@ def intersect_sphere_line(origin, direction, center, radius):
     discriminant = b * b - 4 * a * c
     if discriminant < 0:
         return False, 0.0
+    t = (-b - np.sqrt(discriminant)) / (2.0 * a)
+    if t < 0:
+        t = (-b + np.sqrt(discriminant)) / (2.0 * a)
+    if t < 0:
+        return False, 0.0
     else:
-        t = (-b - np.sqrt(discriminant)) / (2.0 * a)
-        if t < 0:
-            t = (-b + np.sqrt(discriminant)) / (2.0 * a)
-        if t < 0:
-            return False, 0.0
-        else:
-            return True, t
+        return True, t
 
 
 def intersect_sphere_segment(sphere_center, sphere_radius, seg_begin, seg_end):
