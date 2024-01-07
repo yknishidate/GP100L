@@ -89,5 +89,4 @@ if __name__ == '__main__':
         draw_capsule(canvas, p, q,
                      rad_b,
                      color=color)
-
         window.show()
