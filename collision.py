@@ -27,7 +27,7 @@ def intersect_sphere_line(origin, direction, center, radius):
             return True, t
 
 
-def intersect_sphere_line_segment(sphere_center, sphere_radius, seg_begin, seg_end):
+def intersect_sphere_segment(sphere_center, sphere_radius, seg_begin, seg_end):
     origin = seg_begin
     distance = np.linalg.norm(seg_end - seg_begin)
     direction = (seg_end - seg_begin) / distance
@@ -40,7 +40,7 @@ def intersect_sphere_line_segment(sphere_center, sphere_radius, seg_begin, seg_e
 
 
 def intersect_sphere_capsule(sphere_center, sphere_rad, cap_begin, cap_end, cap_rad):
-    return intersect_sphere_line_segment(sphere_center, cap_rad + sphere_rad, cap_begin, cap_end)
+    return intersect_sphere_segment(sphere_center, cap_rad + sphere_rad, cap_begin, cap_end)
 
 
 if __name__ == '__main__':
