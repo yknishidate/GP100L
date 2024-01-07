@@ -2,10 +2,10 @@ import taichi as ti
 import numpy as np
 
 
-def draw_capsule(canvas, seg_begin, seg_end, radius, color):
+def draw_capsule(canvas, begin, end, radius, color):
     n = 64
     centers = ti.Vector.field(2, dtype=float, shape=n)
-    centers.from_numpy(np.linspace(seg_begin, seg_end, n).astype(np.float32))
+    centers.from_numpy(np.linspace(begin, end, n).astype(np.float32))
     canvas.circles(centers, radius, color=color)
 
 
@@ -27,7 +27,7 @@ def intersect_sphere_line(origin, direction, center, radius):
             return True, t
 
 
-def intersect_sphere_line_segment(seg_begin, seg_end, sphere_center, sphere_radius):
+def intersect_sphere_line_segment(sphere_center, sphere_radius, seg_begin, seg_end):
     origin = seg_begin
     distance = np.linalg.norm(seg_end - seg_begin)
     direction = (seg_end - seg_begin) / distance
@@ -39,8 +39,8 @@ def intersect_sphere_line_segment(seg_begin, seg_end, sphere_center, sphere_radi
     return False
 
 
-def intersect_sphere_capsule(seg_begin, seg_end, capsule_rad, sphere_center, sphere_rad):
-    return intersect_sphere_line_segment(seg_begin, seg_end, sphere_center, capsule_rad + sphere_rad)
+def intersect_sphere_capsule(sphere_center, sphere_rad, cap_begin, cap_end, cap_rad):
+    return intersect_sphere_line_segment(sphere_center, cap_rad + sphere_rad, cap_begin, cap_end)
 
 
 if __name__ == '__main__':
@@ -60,10 +60,10 @@ if __name__ == '__main__':
         canvas.circles(centers, sphere_rad, color=(1.0, 0.0, 0.0))
 
         color = (0.0, 0.0, 0.0)
-        seg_begin = np.array([0.3, 0.3])
-        seg_end = np.array([0.7, 0.7])
-        if intersect_sphere_capsule(seg_begin, seg_end, capsule_rad, centers[0], sphere_rad):
+        cap_begin = np.array([0.3, 0.3])
+        cap_end = np.array([0.7, 0.7])
+        if intersect_sphere_capsule(centers[0], sphere_rad, cap_begin, cap_end, capsule_rad):
             color = (1.0, 0.0, 0.0)
 
-        draw_capsule(canvas, seg_begin, seg_end, capsule_rad, color=color)
+        draw_capsule(canvas, cap_begin, cap_end, capsule_rad, color=color)
         window.show()
