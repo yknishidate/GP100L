@@ -31,9 +31,7 @@ def find_furthest_point_from_line(points, line_begin, line_end):
 
 
 def sort_ccw(a, b, c):
-    ab = b - a
-    ac = c - a
-    if np.cross(ab, ac) > 0:
+    if np.cross(b - a, c - a) > 0:
         return a, b, c
     else:
         return a, c, b
@@ -65,7 +63,7 @@ if __name__ == '__main__':
     gui = window.get_gui()
     while window.running:
         # Select circle
-        if window.is_pressed(ti.ui.LMB):
+        if selected == -1 and window.is_pressed(ti.ui.LMB):
             for i in range(num):
                 if length(window.get_cursor_pos() - centers[i]) < 0.01:
                     selected = i
@@ -84,10 +82,6 @@ if __name__ == '__main__':
         _centers.from_numpy(centers)
         canvas.circles(_centers, 0.01, color=(0.0, 0.0, 0.0))
 
-        _line[0] = centers[index0]
-        _line[1] = centers[index1]
-        canvas.lines(_line, 0.01)
-
         # 線から一番遠い点をとる
         index2 = find_furthest_point_from_line(centers,
                                                centers[index0],
@@ -101,9 +95,11 @@ if __name__ == '__main__':
         canvas.circles(_center, 0.01, color=(0.0, 0.0, 1.0))
 
         _line[0] = centers[index0]
+        _line[1] = centers[index1]
+        canvas.lines(_line, 0.01)
+        _line[0] = centers[index0]
         _line[1] = centers[index2]
         canvas.lines(_line, 0.01)
-
         _line[0] = centers[index1]
         _line[1] = centers[index2]
         canvas.lines(_line, 0.01)
