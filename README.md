@@ -16,6 +16,7 @@ Graphics Programming in 100 Lines
 - [x] Voronoi (50 lines)
 - [x] Inverse kinematics (60 lines)
 - [x] Sphere-capsule collision (70 lines)
+- [x] Convex hull (100 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -30,6 +31,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/voronoi.jpg">
 <img width="24%" alt="" src="docs/images/inverse_kinematics.jpg">
 <img width="24%" alt="" src="docs/images/collision.jpg">
+<img width="24%" alt="" src="docs/images/convex_hull.jpg">
 </p>
 
 ## Getting started
