@@ -19,11 +19,11 @@ def find_furthest_point_from_line(centers, line_begin, line_end, direction=None)
         return index
 
 
-def sort_ccw(ai, bi, ci):
-    if np.cross(centers[bi] - centers[ai], centers[ci] - centers[ai]) > 0:
-        return ai, bi, ci
+def sort_ccw(centers, a, b, c):
+    if np.cross(centers[b] - centers[a], centers[c] - centers[a]) > 0:
+        return a, b, c
     else:
-        return ai, ci, bi
+        return a, c, b
 
 
 def find_hull(centers, convex_hull, convex_hull_lines, a, b):
@@ -35,6 +35,21 @@ def find_hull(centers, convex_hull, convex_hull_lines, a, b):
     convex_hull.append(c)
     find_hull(centers, convex_hull, convex_hull_lines, a, c)
     find_hull(centers, convex_hull, convex_hull_lines, c, b)
+
+
+def build_convex_hull(centers):
+    index0 = np.argmin(centers[:, 0])  # leftmost
+    index1 = np.argmax(centers[:, 0])  # rightmost
+    index2 = find_furthest_point_from_line(
+        centers, centers[index0], centers[index1])
+    index0, index1, index2 = sort_ccw(centers, index0, index1, index2)
+
+    convex_hull = [index0, index1, index2]
+    convex_hull_lines = []
+    find_hull(centers, convex_hull, convex_hull_lines, index0, index1)
+    find_hull(centers, convex_hull, convex_hull_lines, index1, index2)
+    find_hull(centers, convex_hull, convex_hull_lines, index2, index0)
+    return convex_hull, convex_hull_lines
 
 
 if __name__ == '__main__':
@@ -66,17 +81,8 @@ if __name__ == '__main__':
             if not window.is_pressed(ti.ui.LMB):
                 selected = -1
 
-        index0 = np.argmin(centers[:, 0])  # leftmost
-        index1 = np.argmax(centers[:, 0])  # rightmost
-        index2 = find_furthest_point_from_line(
-            centers, centers[index0], centers[index1])
-        index0, index1, index2 = sort_ccw(index0, index1, index2)
-
-        convex_hull = [index0, index1, index2]
-        convex_hull_lines = []
-        find_hull(centers, convex_hull, convex_hull_lines, index0, index1)
-        find_hull(centers, convex_hull, convex_hull_lines, index1, index2)
-        find_hull(centers, convex_hull, convex_hull_lines, index2, index0)
+        # Build convex hull
+        convex_hull, convex_hull_lines = build_convex_hull(centers)
 
         # Draw all circles
         _centers.from_numpy(centers.astype(np.float32))
