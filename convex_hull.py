@@ -2,6 +2,13 @@ import taichi as ti
 import numpy as np
 
 
+def generate_random_points(num_points, scale, offset=(0.0, 0.0)):
+    centers = np.zeros((num_points, 2))
+    for i in range(num_points):
+        centers[i] = np.random.random(2) * scale + offset
+    return centers
+
+
 def find_furthest_point_from_line(centers, line_begin, line_end, direction=None):
     # left is positive, right is negative
     signed_distances = np.cross(line_end - line_begin, centers - line_begin)
@@ -59,10 +66,7 @@ if __name__ == '__main__':
     canvas.set_background_color((1, 1, 1))
 
     num = 15
-    centers = np.zeros((num, 2))
-    for i in range(num):
-        centers[i] = np.random.random(2) * 0.5 + 0.25
-
+    centers = generate_random_points(num, 0.5, (0.25, 0.25))
     _centers = ti.Vector.field(2, dtype=float, shape=num)
     _center = ti.Vector.field(2, dtype=float, shape=1)
     _line = ti.Vector.field(2, dtype=float, shape=2)
