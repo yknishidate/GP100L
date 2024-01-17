@@ -10,7 +10,6 @@ class ConvexHull:
         self.convex_hull_lines = []
         self.pos = np.array([0.0, 0.0])
 
-        # self._centers = ti.Vector.field(2, dtype=float, shape=num_points)
         self._center = ti.Vector.field(2, dtype=float, shape=1)
         self._line = ti.Vector.field(2, dtype=float, shape=2)
 
