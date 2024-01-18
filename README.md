@@ -32,6 +32,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/inverse_kinematics.jpg">
 <img width="24%" alt="" src="docs/images/collision.jpg">
 <img width="24%" alt="" src="docs/images/convex_hull.jpg">
+<img width="24%" alt="" src="docs/images/minkowski_sum.jpg">
 </p>
 
 ## Getting started
