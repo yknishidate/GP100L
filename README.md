@@ -17,6 +17,7 @@ Graphics Programming in 100 Lines
 - [x] Inverse kinematics (60 lines)
 - [x] Sphere-capsule collision (70 lines)
 - [x] Convex hull (100 lines)
+- [x] Minkowski sum (100 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
