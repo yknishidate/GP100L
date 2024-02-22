@@ -20,6 +20,7 @@ Graphics Programming in 100 Lines
 - [x] Minkowski sum (100 lines)
 - [x] Digital differential analyzer (50 lines)
 - [x] Bezier DDA (110 lines)
+- [x] Jump flood algorithm (90 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -38,6 +39,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/minkowski_sum.jpg">
 <img width="24%" alt="" src="docs/images/dda.jpg">
 <img width="24%" alt="" src="docs/images/bezier_dda.jpg">
+<img width="24%" alt="" src="docs/images/jfa.jpg">
 </p>
 
 ## Getting started
