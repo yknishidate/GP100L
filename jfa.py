@@ -34,25 +34,24 @@ def distance(x1, y1, x2, y2):
 @ti.kernel
 def jump_flooding_algorithm(grid: ti.template(), seeds_points: ti.template(), step: int):
     for x, y in grid:
-        new_seed = grid[x, y]
-        if new_seed == 0:
+        if grid[x, y] == 0:
             continue
-        for dx in ti.static(range(-1, 2)):
-            for dy in ti.static(range(-1, 2)):
-                nx, ny = x + dx * step, y + dy * step
-                if nx >= 0 and nx < grid.shape[0] and ny >= 0 and ny < grid.shape[1]:
-                    if grid[nx, ny] == 0:
+        new_seed = grid[x, y]
+        for dx, dy in ti.ndrange((-1, 2), (-1, 2)):
+            nx, ny = x + dx * step, y + dy * step
+            if nx >= 0 and nx < grid.shape[0] and ny >= 0 and ny < grid.shape[1]:
+                if grid[nx, ny] == 0:
+                    grid[nx, ny] = new_seed
+                elif grid[nx, ny] != new_seed:
+                    old_seed = grid[nx, ny]
+                    new_seed_point = seeds_points[new_seed - 1]
+                    old_seed_point = seeds_points[old_seed - 1]
+                    new_dist = distance(
+                        nx, ny, new_seed_point[0], new_seed_point[1])
+                    old_dist = distance(
+                        nx, ny, old_seed_point[0], old_seed_point[1])
+                    if new_dist < old_dist:
                         grid[nx, ny] = new_seed
-                    elif grid[nx, ny] != new_seed:
-                        old_seed = grid[nx, ny]
-                        new_seed_point = seeds_points[new_seed - 1]
-                        old_seed_point = seeds_points[old_seed - 1]
-                        new_dist = distance(
-                            nx, ny, new_seed_point[0], new_seed_point[1])
-                        old_dist = distance(
-                            nx, ny, old_seed_point[0], old_seed_point[1])
-                        if new_dist < old_dist:
-                            grid[nx, ny] = new_seed
 
 
 if __name__ == '__main__':
@@ -64,7 +63,7 @@ if __name__ == '__main__':
     pixels = ti.Vector.field(3, dtype=float, shape=(pixel_res, pixel_res))
     grid = ti.field(dtype=int, shape=(grid_res, grid_res))
 
-    np.random.seed(0)
+    np.random.seed(2)
     num_seeds = 5
     random_points = np.random.rand(num_seeds, 2) * grid_res
     random_points = random_points.astype(int)
@@ -80,7 +79,7 @@ if __name__ == '__main__':
     while gui.running:
         if frame % interval == 0:
             jump_flooding_algorithm(grid, seeds_points, step)
-            step //= 2
+            step = max(step // 2, 1)
         frame += 1
 
         render(cell_size, grid, pixels)
