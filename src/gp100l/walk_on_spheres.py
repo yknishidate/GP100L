@@ -44,11 +44,6 @@ def sample_on_circle(center: vec2, radius: float) -> vec2:
     return center + (x, y)
 
 @ti.kernel
-def init_boundary_colors(boundary_colors: ti.template()):
-    for i in boundary_colors:
-        boundary_colors[i] = (ti.random(), ti.random(), ti.random())
-
-@ti.kernel
 def recursive_walk(sample_pos: ti.template(), centers: ti.template()):
     # TODO: curr_pos = ti.Vector([0.0, 0.0])
     recursive_circle_centers.fill((0.0, 0.0))
@@ -75,7 +70,7 @@ if __name__ == '__main__':
     width, height = 1024, 1024
     window = ti.ui.Window("Walk on Spheres", (width, height), vsync=True)
     canvas = window.get_canvas()
-    canvas.set_background_color((1, 1, 1))
+    canvas.set_background_color((0.5, 0.5, 0.5))
 
     num = 6
     centers = ti.Vector.field(2, dtype=float, shape=num)
@@ -87,8 +82,11 @@ if __name__ == '__main__':
     centers[5] = (0.4, 0.4)
     _line = ti.Vector.field(2, dtype=float, shape=2)
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
+
     boundary_colors = ti.Vector.field(3, dtype=float, shape=num)
-    init_boundary_colors(boundary_colors)
+    for i in range(num):
+        value = i % 2
+        boundary_colors[i] = (value, value, value)
 
     max_recursive = 10
     recursive_circle_centers = ti.Vector.field(2, dtype=float, shape=max_recursive)
