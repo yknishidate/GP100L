@@ -44,10 +44,16 @@ Graphics Programming in 100 Lines
 
 ## Getting started
 
-```sh
-git clone https://github.com/yknishidate/GP100L.git
+I use `rye`.
 
-pip install taichi
+```cmd
+git clone https://github.com/yknishidate/GP100L.git
+cd GP100L
+
+rye init
+rye pin 3.10
+rye add taichi
+python src\gp100l\<file_name>
 ```
 
 ## Library
