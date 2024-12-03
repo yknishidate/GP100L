@@ -1,15 +1,13 @@
 import taichi as ti
 import numpy as np
+from taichi import math as tm
 
-vec2 = ti.math.vec2
-
-# TODO:
-# from taichi import math as tm
+vec2 = tm.vec2
 
 @ti.func
 def closest_point(x: vec2, a: vec2, b: vec2):
     u = b - a
-    t = ti.math.clamp(ti.math.dot(x - a, u) / ti.math.dot(u, u), 0.0, 1.0)
+    t = tm.clamp(tm.dot(x - a, u) / tm.dot(u, u), 0.0, 1.0)
     return (1.0 - t) * a + t * b
 
 @ti.func
@@ -20,10 +18,10 @@ def distance_from_boundaries(pos: vec2, centers):
         a = centers[i]
         b = centers[(i+1) % num]
         y = closest_point(pos, a, b)
-        dist = ti.math.distance(pos, y)
-        # if ti.math.cross(b - a, pos - a) < 0.0:
+        dist = tm.distance(pos, y)
+        # if tm.cross(b - a, pos - a) < 0.0:
         #     dist = -dist
-        min_distance = ti.math.min(min_distance, dist)
+        min_distance = tm.min(min_distance, dist)
     return min_distance
 
 @ti.kernel
@@ -32,7 +30,7 @@ def render(centers: ti.template()):
         # screen_position = ti.Vector([i / width - 0.5, j / height - 0.5, 0])
         screen_position = vec2([i / width, j / height])
         dist = distance_from_boundaries(screen_position, centers)
-        # colors[i, j] = ti.math.clamp(screen_position, 0.0, 1.0)
+        # colors[i, j] = tm.clamp(screen_position, 0.0, 1.0)
         if dist < 0:
             colors[i, j] = (0, 0, -dist * 10)
         else:
@@ -40,9 +38,9 @@ def render(centers: ti.template()):
 
 @ti.func
 def sample_on_circle(center: vec2, radius: float) -> vec2:
-    angle = ti.random() * 2.0 * ti.math.pi
-    x = ti.math.cos(angle) * radius
-    y = ti.math.sin(angle) * radius
+    angle = ti.random() * 2.0 * tm.pi
+    x = tm.cos(angle) * radius
+    y = tm.sin(angle) * radius
     return center + (x, y)
 
 @ti.kernel
