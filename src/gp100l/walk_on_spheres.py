@@ -1,5 +1,4 @@
 import taichi as ti
-import numpy as np
 from taichi import math as tm
 
 vec2 = tm.vec2
@@ -21,20 +20,10 @@ def distance_from_boundaries(pos: vec2) -> vec2:
         b = centers[(i+1) % num]
         y = closest_point(pos, a, b)
         dist = tm.distance(pos, y)
-        min_distance = tm.min(min_distance, dist)
-        argmin = i
-    return vec2(min_distance, argmin)
-
-@ti.kernel
-def render():
-    for i, j in colors:
-        screen_position = vec2([i / width, j / height])
-        result = distance_from_boundaries(screen_position)
-        dist, boundary = result[0], int(result[1])
-        if dist < 0:
-            colors[i, j] = (0, 0, -dist * 10)
-        else:
-            colors[i, j] = (dist * 10, 0, 0)
+        if dist < min_distance:
+            min_distance = dist
+            argmin = i
+    return vec2(min_distance, float(argmin))
 
 @ti.func
 def sample_on_circle(center: vec2, radius: float) -> vec2:
@@ -43,21 +32,49 @@ def sample_on_circle(center: vec2, radius: float) -> vec2:
     y = tm.sin(angle) * radius
     return center + (x, y)
 
-@ti.kernel
-def recursive_walk(sample_pos: vec2):
-    recursive_circle_centers.fill((0.0, 0.0))
-    recursive_circle_radiuses.fill((0.0))
+@ti.func
+def recursive_walk(sample_pos: vec2) -> int:
+    # recursive_circle_centers.fill((0.0, 0.0))
+    # recursive_circle_radiuses.fill((0.0))
 
     curr_pos = vec2(sample_pos[0], sample_pos[1])
+    boundary = -1
+
     ti.loop_config(serialize=True)
     for i in range(max_recursion):
         result = distance_from_boundaries(curr_pos)
-        dist, boundary = result[0], int(result[1])
+        # dist, boundary = result[0], int(result[1])
+        dist = result[0]
+        boundary = int(result[1])
         
-        recursive_circle_centers[i] = vec2(curr_pos[0], curr_pos[1])  # deep copy
-        recursive_circle_radiuses[i] = dist
+        # recursive_circle_centers[i] = vec2(curr_pos[0], curr_pos[1])  # deep copy
+        # recursive_circle_radiuses[i] = dist
 
-        curr_pos = sample_on_circle(recursive_circle_centers[i], dist)
+        # curr_pos = sample_on_circle(recursive_circle_centers[i], dist)
+        curr_pos = sample_on_circle(curr_pos, dist)
+    return boundary
+
+@ti.kernel
+def render():
+    for i, j in colors:
+        num_samples = 10
+        sum_value = vec3(0.0)
+        count = 0
+        for _ in range(num_samples):
+            screen_position = vec2([i / width, j / height])
+            boundary = recursive_walk(screen_position)
+            if boundary != -1:
+                sum_value += boundary_colors[boundary]
+                count += 1
+        # colors[i, j] = vec3(0.5)
+        colors[i, j] = sum_value / float(count)
+
+        # result = distance_from_boundaries(screen_position)
+        # dist, boundary = result[0], int(result[1])
+        # if dist < 0:
+        #     colors[i, j] = (0, 0, -dist * 10)
+        # else:
+        #     colors[i, j] = (dist * 10, 0, 0)
 
 if __name__ == '__main__':
     ti.init(arch=ti.vulkan)
@@ -83,26 +100,25 @@ if __name__ == '__main__':
         boundary_colors[i] = (value, value, value)
 
     max_recursion = 10
-    recursive_circle_centers = ti.Vector.field(2, dtype=float, shape=max_recursion)
-    recursive_circle_radiuses = ti.Vector.field(1, dtype=float, shape=max_recursion)
+    # recursive_circle_centers = ti.Vector.field(2, dtype=float, shape=max_recursion)
+    # recursive_circle_radiuses = ti.Vector.field(1, dtype=float, shape=max_recursion)
 
-    sample_pos = ti.Vector.field(2, dtype=float, shape=1)
-    sample_pos[0] = (0.5, 0.5)
-    _draw_pos = ti.Vector.field(2, dtype=float, shape=1)
+    # sample_pos = vec2(0.5, 0.5)
+    # _draw_pos = ti.Vector.field(2, dtype=float, shape=1)
 
-    recursive_walk(sample_pos[0])
+    # recursive_walk(sample_pos[0])
     
-    selected = -1
+    # selected = -1
     gui = window.get_gui()
     frame = 0
-    clicked = False
+    # clicked = False
     while window.running:
-        if window.is_pressed(ti.ui.LMB):
-            sample_pos[0] = window.get_cursor_pos()
-            clicked = True
-        if frame % 5 == 0 or clicked:
-            recursive_walk(sample_pos[0])
-            clicked = False
+        # if window.is_pressed(ti.ui.LMB):
+        #     # sample_pos = window.get_cursor_pos()
+        #     clicked = True
+        # if frame % 5 == 0 or clicked:
+        #     recursive_walk(sample_pos[0])
+        #     clicked = False
 
         # Render image
         render()
@@ -115,21 +131,21 @@ if __name__ == '__main__':
             canvas.lines(_line, 0.005, color=(boundary_colors[i][0], boundary_colors[i][1], boundary_colors[i][2]))
 
         # Draw all circles
-        canvas.circles(centers, 0.005, color=(0.0, 0.0, 0.0))
+        canvas.circles(centers, 0.005, color=(0.0, 0.0, 0.8))
 
         # ---
 
 
-        for i in range(max_recursion):
-            _draw_pos[0] = recursive_circle_centers[i]
-            canvas.circles(_draw_pos, recursive_circle_radiuses[i][0], color=(0.9, 0.9, 0.9))
+        # for i in range(max_recursion):
+        #     _draw_pos[0] = recursive_circle_centers[i]
+        #     canvas.circles(_draw_pos, recursive_circle_radiuses[i][0], color=(0.9, 0.9, 0.9))
 
-        for i in range(max_recursion):
-            _draw_pos[0] = recursive_circle_centers[i]
-            canvas.circles(_draw_pos, 0.005, color=(0.0, 1.0, 0.0))
+        # for i in range(max_recursion):
+        #     _draw_pos[0] = recursive_circle_centers[i]
+        #     canvas.circles(_draw_pos, 0.005, color=(0.0, 1.0, 0.0))
 
-        # Draw sample pos
-        canvas.circles(sample_pos, 0.005, color=(0.0, 1.0, 0.0))
+        # # Draw sample pos
+        # canvas.circles(sample_pos, 0.005, color=(0.0, 1.0, 0.0))
 
 
         window.show()
