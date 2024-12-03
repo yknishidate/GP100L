@@ -21,6 +21,7 @@ Graphics Programming in 100 Lines
 - [x] Digital differential analyzer (50 lines)
 - [x] Bezier DDA (110 lines)
 - [x] Jump flood algorithm (90 lines)
+- [x] Walk on Spheres (105 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -40,6 +41,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/dda.jpg">
 <img width="24%" alt="" src="docs/images/bezier_dda.jpg">
 <img width="24%" alt="" src="docs/images/jfa.jpg">
+<img width="24%" alt="" src="docs/images/wos.png">
 </p>
 
 ## Getting started
