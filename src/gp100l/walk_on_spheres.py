@@ -78,14 +78,13 @@ if __name__ == '__main__':
     canvas.set_background_color((1, 1, 1))
 
     num = 6
-    centers = np.zeros((num, 2))
+    centers = ti.Vector.field(2, dtype=float, shape=num)
     centers[0] = (0.2, 0.2)
     centers[1] = (0.8, 0.3)
     centers[2] = (0.6, 0.5)
     centers[3] = (0.8, 0.8)
     centers[4] = (0.2, 0.7)
     centers[5] = (0.4, 0.4)
-    _centers = ti.Vector.field(2, dtype=float, shape=num)
     _line = ti.Vector.field(2, dtype=float, shape=2)
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
     boundary_colors = ti.Vector.field(3, dtype=float, shape=num)
@@ -102,16 +101,6 @@ if __name__ == '__main__':
     selected = -1
     gui = window.get_gui()
     while window.running:
-        # Select and move circle
-        # if selected == -1 and window.is_pressed(ti.ui.LMB):
-        #     for i in range(num):
-        #         if np.linalg.norm(window.get_cursor_pos() - centers[i]) < 0.02:
-        #             selected = i
-        #             break
-        # if selected != -1:
-        #     centers[selected] = window.get_cursor_pos()
-        #     if not window.is_pressed(ti.ui.LMB):
-        #         selected = -1
         if window.is_pressed(ti.ui.LMB):
             sample_pos[0] = window.get_cursor_pos()
 
@@ -126,12 +115,11 @@ if __name__ == '__main__':
             canvas.lines(_line, 0.005, color=(boundary_colors[i][0], boundary_colors[i][1], boundary_colors[i][2]))
 
         # Draw all circles
-        _centers.from_numpy(centers.astype(np.float32))
-        canvas.circles(_centers, 0.005, color=(0.0, 0.0, 0.0))
+        canvas.circles(centers, 0.005, color=(0.0, 0.0, 0.0))
 
         # ---
 
-        recursive_walk(sample_pos, _centers)
+        recursive_walk(sample_pos, centers)
 
         for i in range(max_recursive):
             _draw_pos[0] = recursive_circle_centers[i]
