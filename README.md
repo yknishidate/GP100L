@@ -10,7 +10,7 @@ Graphics Programming in 100 Lines
 - [x] Grid-based fluid (110 lines)
 - [x] Half-edge (120 lines)
 - [x] Catmull-Clark subdivision (180 lines)
-- [x] Bezier curve (70 lines)
+- [x] Bezier curve (48 lines)
 - [x] Perlin noise (100 lines)
 - [x] Poisson disk sampling (40 lines)
 - [x] Voronoi (50 lines)
