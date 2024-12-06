@@ -1,5 +1,6 @@
 import taichi as ti
 import numpy as np
+import ui_util
 
 
 def generate_random_points(num_points, scale, offset=(0.0, 0.0)):
@@ -74,16 +75,7 @@ if __name__ == '__main__':
     selected = -1
     gui = window.get_gui()
     while window.running:
-        # Select and move circle
-        if selected == -1 and window.is_pressed(ti.ui.LMB):
-            for i in range(num):
-                if np.linalg.norm(window.get_cursor_pos() - centers[i]) < 0.01:
-                    selected = i
-                    break
-        if selected != -1:
-            centers[selected] = window.get_cursor_pos()
-            if not window.is_pressed(ti.ui.LMB):
-                selected = -1
+        selected = ui_util.select_and_drag_circle(window, selected, centers, num)
 
         # Build convex hull
         convex_hull, convex_hull_lines = build_convex_hull(centers)

@@ -1,11 +1,12 @@
 import taichi as ti
 from taichi import math as tm
+import ui_util
 
 vec2 = tm.vec2
 vec3 = tm.vec3
 
 @ti.func
-def closest_point(x: vec2, a: vec2, b: vec2):
+def closest_point(x: vec2, a: vec2, b: vec2) -> vec2:
     u = b - a
     t = tm.clamp(tm.dot(x - a, u) / tm.dot(u, u), 0.0, 1.0)
     return (1.0 - t) * a + t * b
@@ -38,11 +39,12 @@ def recursive_walk(sample_pos: vec2) -> int:
     boundary = -1
 
     ti.loop_config(serialize=True)
-    for _ in range(max_recursion):
+    for _ in range(10):
         result = distance_from_boundaries(curr_pos)
         dist = result[0]
-        # NOTE: 本来は dist が十分小さければ打ち切る。taichiの都合で省略している。
         boundary = int(result[1])
+        if dist < 0.001:
+            break
         curr_pos = sample_on_circle(curr_pos, dist)
     return boundary
 
@@ -65,7 +67,6 @@ if __name__ == '__main__':
     width, height = 1024, 1024
     window = ti.ui.Window("Walk on Spheres", (width, height), vsync=True)
     canvas = window.get_canvas()
-    canvas.set_background_color((0.5, 0.5, 0.5))
 
     num = 6
     centers = ti.Vector.field(2, dtype=float, shape=num)
@@ -75,7 +76,6 @@ if __name__ == '__main__':
     centers[3] = (0.8, 0.8)
     centers[4] = (0.2, 0.7)
     centers[5] = (0.4, 0.4)
-    _line = ti.Vector.field(2, dtype=float, shape=2)
     colors = ti.Vector.field(3, dtype=float, shape=(width, height))
 
     boundary_colors = ti.Vector.field(3, dtype=float, shape=num)
@@ -83,22 +83,10 @@ if __name__ == '__main__':
         value = i % 2
         boundary_colors[i] = (value, value, value)
 
-    max_recursion = 10
-    
+    selected = -1
     gui = window.get_gui()
-    frame = 0
     while window.running:
-        # Render image
+        selected = ui_util.select_and_drag_circle(window, selected, centers, num)
         render()
         canvas.set_image(colors)
-
-        # Draw lines
-        for i in range(num):
-            _line[0] = centers[i]
-            _line[1] = centers[(i + 1) % num]
-            canvas.lines(_line, 0.005, color=(boundary_colors[i][0], boundary_colors[i][1], boundary_colors[i][2]))
-
-        # Draw all circles
-        canvas.circles(centers, 0.005, color=(0.0, 0.0, 0.8))
-
         window.show()
