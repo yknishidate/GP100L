@@ -1,6 +1,5 @@
+import numpy as np
 import taichi as ti
-import time
-
 
 @ti.func
 def sample_lerp(data: ti.template(), normed_pos: ti.template()):
@@ -17,55 +16,61 @@ def sample_lerp(data: ti.template(), normed_pos: ti.template()):
 
 
 @ti.kernel
-def compute_pressure():
-    for i, j in colors:
-        x0 = pressure[i - 1, j]
-        x1 = pressure[i + 1, j]
-        y0 = pressure[i, j - 1]
-        y1 = pressure[i, j + 1]
-        div = divergence[i, j]
-        pressure[i, j] = (x0 + x1 + y0 + y1 - div) / 4
+def compute_pressure(parity: int):
+    for i in range(1, width - 1):
+        for j in range(1, height - 1):
+            if (i + j) % 2 == parity:
+                x0 = pressure[i - 1, j]
+                x1 = pressure[i + 1, j]
+                y0 = pressure[i, j - 1]
+                y1 = pressure[i, j + 1]
+                div = divergence[i, j]
+                pressure[i, j] = (x0 + x1 + y0 + y1 - div) / 4
 
 
 @ti.kernel
-def add_force(cursor: ti.template(), cursor_move: ti.template()):
-    for i, j in colors:
-        pos = ti.Vector([i / width, j / height])
-        dist = ti.max(ti.math.distance(pos, cursor), 0.1) * 10.0
-        velocity[i, j] += cursor_move / (dist * dist)
+def add_force(cursor: ti.template()):
+    for i in range(1, width - 1):
+        for j in range(1, height - 1):
+            pos = ti.Vector([i / width, j / height])
+            if ti.math.distance(pos, cursor) < 0.1:
+                velocity[i, j] = ti.Vector([0.0, -0.2])
 
 
 @ti.kernel
 def advect(dt: float):
-    for i, j in colors:
-        offset = velocity[i, j] * dt
-        pos = ti.Vector([i / width, j / height])
-        velocity[i, j] = sample_lerp(velocity, pos - offset)
+    for i in range(1, width - 1):
+        for j in range(1, height - 1):
+            offset = velocity[i, j] * dt
+            pos = ti.Vector([i / width, j / height])
+            velocity[i, j] = sample_lerp(velocity, pos - offset)
 
 
 @ti.kernel
 def compute_divergence():
-    for i, j in colors:
-        x0 = velocity[i - 1, j].x
-        x1 = velocity[i + 1, j].x
-        y0 = velocity[i, j - 1].y
-        y1 = velocity[i, j + 1].y
-        dx = (x1 - x0) / 2.0
-        dy = (y1 - y0) / 2.0
-        divergence[i, j] = dx + dy
+    for i in range(1, width - 1):
+        for j in range(1, height - 1):
+            x0 = velocity[i - 1, j].x
+            x1 = velocity[i + 1, j].x
+            y0 = velocity[i, j - 1].y
+            y1 = velocity[i, j + 1].y
+            dx = (x1 - x0) / 2.0
+            dy = (y1 - y0) / 2.0
+            divergence[i, j] = (dx + dy) * 1.9
 
 
 @ti.kernel
 def subtract_pressure_gradient():
-    for i, j in colors:
-        x0 = pressure[i - 1, j]
-        x1 = pressure[i + 1, j]
-        y0 = pressure[i, j - 1]
-        y1 = pressure[i, j + 1]
-        dx = (x1 - x0) / 2.0
-        dy = (y1 - y0) / 2.0
-        grad = ti.Vector([dx, dy])
-        velocity[i, j] -= grad
+    for i in range(1, width - 1):
+        for j in range(1, height - 1):
+            x0 = pressure[i - 1, j]
+            x1 = pressure[i + 1, j]
+            y0 = pressure[i, j - 1]
+            y1 = pressure[i, j + 1]
+            dx = (x1 - x0) / 2.0
+            dy = (y1 - y0) / 2.0
+            grad = ti.Vector([dx, dy])
+            velocity[i, j] -= grad
 
 
 @ti.kernel
@@ -85,21 +90,18 @@ if __name__ == '__main__':
     divergence = ti.field(dtype=float, shape=(width, height))
     pressure = ti.field(dtype=float, shape=(width, height))
 
-    last_time = time.time()
-    last_cursor = ti.Vector(window.get_cursor_pos())
+    frame = 0
     while window.running:
-        cursor = ti.Vector(window.get_cursor_pos())
-        t = time.time()
-        add_force(cursor, (cursor - last_cursor))
-        advect(t - last_time)
+        emitter_pos = ti.Vector([0.5 + np.sin(frame * 0.04) * 0.2, 0.7])
+        add_force(emitter_pos)
+        advect(0.05)
         compute_divergence()
         pressure.fill(0.0)
-        for _ in range(10):
-            compute_pressure()
+        for i in range(20):
+            compute_pressure(parity=i%2)
         subtract_pressure_gradient()
         render()
 
         canvas.set_image(colors)
         window.show()
-        last_cursor = cursor
-        last_time = t
+        frame += 1
