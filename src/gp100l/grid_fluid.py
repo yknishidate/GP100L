@@ -3,11 +3,6 @@ import time
 
 
 @ti.func
-def lerp(x, y, t):
-    return x * (1 - t) + y * t
-
-
-@ti.func
 def sample_lerp(data: ti.template(), normed_pos: ti.template()):
     pos = normed_pos * ti.Vector([width, height])
     x, y = int(pos.x), int(pos.y)
@@ -16,9 +11,9 @@ def sample_lerp(data: ti.template(), normed_pos: ti.template()):
     val10 = data[x + 1, y]
     val01 = data[x, y + 1]
     val11 = data[x + 1, y + 1]
-    val0 = lerp(val00, val10, tx)
-    val1 = lerp(val01, val11, tx)
-    return lerp(val0, val1, ty)
+    val0 = ti.math.mix(val00, val10, tx)
+    val1 = ti.math.mix(val01, val11, tx)
+    return ti.math.mix(val0, val1, ty)
 
 
 @ti.kernel
@@ -98,7 +93,8 @@ if __name__ == '__main__':
         add_force(cursor, (cursor - last_cursor))
         advect(t - last_time)
         compute_divergence()
-        for _ in range(5):
+        pressure.fill(0.0)
+        for _ in range(10):
             compute_pressure()
         subtract_pressure_gradient()
         render()
