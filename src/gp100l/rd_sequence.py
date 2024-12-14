@@ -5,11 +5,22 @@
 import taichi as ti
 import numpy as np
 
-def phi(d): 
-  x = 2.0
-  for _ in range(10): 
-    x = pow(1 + x, 1 / (d + 1)) 
-  return x
+class RdGenerator:
+    def phi(self, d):
+        x = 2.0
+        for _ in range(10):
+            x = pow(1 + x, 1 / (d + 1)) 
+        return x
+
+    def __init__(self, dimension, seed=0.0):
+        g = self.phi(dimension)
+        self.seed = seed
+        self.alpha = np.zeros(dimension)
+        for j in range(dimension):
+            self.alpha[j] = pow(1 / g, j + 1) % 1
+
+    def sample(self, i):
+        return (self.seed + (i + 1) * self.alpha) % 1
 
 
 if __name__ == '__main__':
@@ -23,19 +34,15 @@ if __name__ == '__main__':
     sequence = ti.Vector.field(dimension, dtype=float, shape=num)
     colors = ti.Vector.field(3, dtype=float, shape=num)
 
-    g = phi(dimension)
-    alpha = np.zeros(dimension)
-    for j in range(dimension):
-        alpha[j] = pow(1 / g, j + 1) % 1
+    generator = RdGenerator(dimension, 0.5)
 
-    seed = 0.5
     i = 0
     while window.running:
         if i < num:
-            sequence[i] = (seed + (i + 1) * alpha) % 1
+            sequence[i] = generator.sample(i)
             colors[i] = (i / num, 0.0, 1.0 - i / num)
         canvas.circles(sequence, 0.01, per_vertex_color=colors)
         if i == num:
-          window.save_image(f'docs/images/rd_sequence.jpg')
+            window.save_image(f'docs/images/rd_sequence.jpg')
         window.show()
         i += 1
