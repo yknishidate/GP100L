@@ -22,6 +22,7 @@ Graphics Programming in 100 Lines
 - [x] Bezier DDA (110 lines)
 - [x] Jump flood algorithm (90 lines)
 - [x] Walk on Spheres (93 lines)
+- [x] Rd sequence (42 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -42,6 +43,7 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/bezier_dda.jpg">
 <img width="24%" alt="" src="docs/images/jfa.jpg">
 <img width="24%" alt="" src="docs/images/wos.png">
+<img width="24%" alt="" src="docs/images/rd_sequence.jpg">
 </p>
 
 ## Getting started
