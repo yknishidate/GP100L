@@ -31,7 +31,7 @@ if __name__ == '__main__':
     seed = 0.5
     i = 0
     while window.running:
-        if i <= num:
+        if i < num:
             sequence[i] = (seed + (i + 1) * alpha) % 1
             colors[i] = (i / num, 0.0, 1.0 - i / num)
         canvas.circles(sequence, 0.01, per_vertex_color=colors)
