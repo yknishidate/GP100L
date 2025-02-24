@@ -23,7 +23,6 @@ Graphics Programming in 100 Lines
 - [x] [Jump flood algorithm](./src/gp100l/jfa.py) (90 lines)
 - [x] [Walk on Spheres](./src/gp100l/walk_on_spheres.py) (93 lines)
 - [x] [Rd sequence](./src/gp100l/rd_sequence.py) (42 lines)
-- [x] [Tone mapping](./src/gp100l/tonemap.py) (126 lines)
 
 <p align="left">
 <img width="24%" alt="" src="docs/images/raytracing.jpg">
@@ -45,7 +44,6 @@ Graphics Programming in 100 Lines
 <img width="24%" alt="" src="docs/images/jfa.jpg">
 <img width="24%" alt="" src="docs/images/wos.png">
 <img width="24%" alt="" src="docs/images/rd_sequence.jpg">
-<img width="24%" alt="" src="docs/images/tonemap.jpg">
 </p>
 
 ## Getting started
